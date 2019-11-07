@@ -1,0 +1,51 @@
+#FIXME: This is still a WIP
+
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: customer
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - customer-gateway
+  http:
+  - name: "normal-traffic"
+    match:
+    - uri:
+        prefix: /customer
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        host: customer
+        subset: version-v1
+        port:
+          number: 8080
+      weight: 90
+    - destination:
+        host: customer
+        subset: version-v2
+        port:
+          number: 8080
+      weight: 10
+#   tls:
+#   - name: "tls-traffic"
+#     match:
+#     - port: 443
+#       sniHosts:
+#       - "*"
+#     # - uri:
+#     #     prefix: /customer
+#     # rewrite:
+#     #   uri: /
+#     route:
+#     - destination:
+#         host: customer2
+#         # subset: version-v2
+#         # port: 
+#         #   number: 443
+#       weight: 100
+
+    
+# # ---

@@ -1,0 +1,17 @@
+# Represents a separate service that runs https ports
+kind: Service
+apiVersion: v1
+metadata:
+  name: customer-ssl
+spec:
+  ports:
+    - name: https
+      protocol: TCP
+      port: 10443
+      targetPort: 10443
+  selector:
+    app: customer
+    version: v2
+  sessionAffinity: None
+status:
+  loadBalancer: {}

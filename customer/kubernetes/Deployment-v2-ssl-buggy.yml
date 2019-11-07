@@ -1,0 +1,70 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: customer-v2
+  namespace: tutorial
+  labels:
+    app: customer
+    version: v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: customer
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: customer
+        version: v2
+      annotations:
+        sidecar.istio.io/inject: 'true'
+    spec:
+      volumes:
+        - name: customer-cert
+          secret:
+            secretName: customer-cert
+            defaultMode: 420
+      containers:
+        - resources: {}
+          terminationMessagePath: /dev/termination-log
+          name: customer
+          env:
+            - name: ASPNETCORE_URLS
+              value: 'https://*:10443;http://*:8080'
+            - name: ASPNETCORE_HTTPS_PORT
+              value: '10443'
+            - name: ASPNETCORE_Kestrel__Certificates__Default__Password
+              valueFrom:
+                secretKeyRef:
+                  name: cert-pass
+                  key: password
+            - name: ASPNETCORE_Kestrel__Certificates__Default__Path
+              # This is the intended bug, should be cert-secret
+              value: /cert-secrets/certificate.pfx
+          securityContext:
+            privileged: false
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+            - name: https
+              containerPort: 10443
+              protocol: TCP
+            - name: prometheus
+              containerPort: 9779
+              protocol: TCP
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: customer-cert
+              readOnly: true
+              mountPath: /cert-secret/
+          terminationMessagePolicy: File
+          #image: 'docker.io/mhildema/customer-dotnet:v25'
+          image: 'mhildema/customer-dotnet:v27'
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler
+

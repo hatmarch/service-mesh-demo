@@ -1,0 +1,377 @@
+{
+    "source": 2,
+    "revision": 10,
+    "description": null,
+    "createdBy": {
+        "displayName": "mhildenb@redhat.com",
+        "url": "https://spsprodeau1.vssps.visualstudio.com/Af38b2f84-a226-4eee-8329-878558ebc81d/_apis/Identities/c7376a94-2c19-6008-b579-e2ef6440376e",
+        "_links": {
+            "avatar": {
+                "href": "https://dev.azure.com/mhildenb/_apis/GraphProfile/MemberAvatars/msa.YzczNzZhOTQtMmMxOS03MDA4LWI1NzktZTJlZjY0NDAzNzZl"
+            }
+        },
+        "id": "c7376a94-2c19-6008-b579-e2ef6440376e",
+        "uniqueName": "mhildenb@redhat.com",
+        "imageUrl": "https://dev.azure.com/mhildenb/_apis/GraphProfile/MemberAvatars/msa.YzczNzZhOTQtMmMxOS03MDA4LWI1NzktZTJlZjY0NDAzNzZl",
+        "descriptor": "msa.YzczNzZhOTQtMmMxOS03MDA4LWI1NzktZTJlZjY0NDAzNzZl"
+    },
+    "createdOn": "2019-10-04T07:38:52.273Z",
+    "modifiedBy": {
+        "displayName": "mhildenb@redhat.com",
+        "url": "https://spsprodeau1.vssps.visualstudio.com/Af38b2f84-a226-4eee-8329-878558ebc81d/_apis/Identities/c7376a94-2c19-6008-b579-e2ef6440376e",
+        "_links": {
+            "avatar": {
+                "href": "https://dev.azure.com/mhildenb/_apis/GraphProfile/MemberAvatars/msa.YzczNzZhOTQtMmMxOS03MDA4LWI1NzktZTJlZjY0NDAzNzZl"
+            }
+        },
+        "id": "c7376a94-2c19-6008-b579-e2ef6440376e",
+        "uniqueName": "mhildenb@redhat.com",
+        "imageUrl": "https://dev.azure.com/mhildenb/_apis/GraphProfile/MemberAvatars/msa.YzczNzZhOTQtMmMxOS03MDA4LWI1NzktZTJlZjY0NDAzNzZl",
+        "descriptor": "msa.YzczNzZhOTQtMmMxOS03MDA4LWI1NzktZTJlZjY0NDAzNzZl"
+    },
+    "modifiedOn": "2019-10-09T10:38:09.563Z",
+    "isDeleted": false,
+    "lastRelease": {
+        "id": 16,
+        "name": "Release-16",
+        "artifacts": [],
+        "_links": {},
+        "description": "",
+        "releaseDefinition": {
+            "id": 1,
+            "projectReference": null,
+            "_links": {}
+        },
+        "createdOn": "2019-10-09T10:38:36.420Z",
+        "createdBy": {
+            "displayName": "mhildenb@redhat.com",
+            "url": "https://spsprodeau1.vssps.visualstudio.com/Af38b2f84-a226-4eee-8329-878558ebc81d/_apis/Identities/c7376a94-2c19-6008-b579-e2ef6440376e",
+            "_links": {
+                "avatar": {
+                    "href": "https://dev.azure.com/mhildenb/_apis/GraphProfile/MemberAvatars/msa.YzczNzZhOTQtMmMxOS03MDA4LWI1NzktZTJlZjY0NDAzNzZl"
+                }
+            },
+            "id": "c7376a94-2c19-6008-b579-e2ef6440376e",
+            "uniqueName": "mhildenb@redhat.com",
+            "imageUrl": "https://dev.azure.com/mhildenb/_apis/GraphProfile/MemberAvatars/msa.YzczNzZhOTQtMmMxOS03MDA4LWI1NzktZTJlZjY0NDAzNzZl",
+            "descriptor": "msa.YzczNzZhOTQtMmMxOS03MDA4LWI1NzktZTJlZjY0NDAzNzZl"
+        }
+    },
+    "variables": {
+        "IMAGETAG": {
+            "value": "mhildema/customer-dotnet:v$(Build.BuildId)"
+        }
+    },
+    "variableGroups": [],
+    "environments": [
+        {
+            "id": 1,
+            "name": "Development",
+            "rank": 1,
+            "owner": {
+                "displayName": "mhildenb@redhat.com",
+                "url": "https://spsprodeau1.vssps.visualstudio.com/Af38b2f84-a226-4eee-8329-878558ebc81d/_apis/Identities/c7376a94-2c19-6008-b579-e2ef6440376e",
+                "_links": {
+                    "avatar": {
+                        "href": "https://dev.azure.com/mhildenb/_apis/GraphProfile/MemberAvatars/msa.YzczNzZhOTQtMmMxOS03MDA4LWI1NzktZTJlZjY0NDAzNzZl"
+                    }
+                },
+                "id": "c7376a94-2c19-6008-b579-e2ef6440376e",
+                "uniqueName": "mhildenb@redhat.com",
+                "imageUrl": "https://dev.azure.com/mhildenb/_apis/GraphProfile/MemberAvatars/msa.YzczNzZhOTQtMmMxOS03MDA4LWI1NzktZTJlZjY0NDAzNzZl",
+                "descriptor": "msa.YzczNzZhOTQtMmMxOS03MDA4LWI1NzktZTJlZjY0NDAzNzZl"
+            },
+            "variables": {},
+            "variableGroups": [],
+            "preDeployApprovals": {
+                "approvals": [
+                    {
+                        "rank": 1,
+                        "isAutomated": true,
+                        "isNotificationOn": false,
+                        "id": 1
+                    }
+                ],
+                "approvalOptions": {
+                    "requiredApproverCount": null,
+                    "releaseCreatorCanBeApprover": false,
+                    "autoTriggeredAndPreviousEnvironmentApprovedCanBeSkipped": false,
+                    "enforceIdentityRevalidation": false,
+                    "timeoutInMinutes": 0,
+                    "executionOrder": 1
+                }
+            },
+            "deployStep": {
+                "id": 2
+            },
+            "postDeployApprovals": {
+                "approvals": [
+                    {
+                        "rank": 1,
+                        "isAutomated": true,
+                        "isNotificationOn": false,
+                        "id": 3
+                    }
+                ],
+                "approvalOptions": {
+                    "requiredApproverCount": null,
+                    "releaseCreatorCanBeApprover": false,
+                    "autoTriggeredAndPreviousEnvironmentApprovedCanBeSkipped": false,
+                    "enforceIdentityRevalidation": false,
+                    "timeoutInMinutes": 0,
+                    "executionOrder": 2
+                }
+            },
+            "deployPhases": [
+                {
+                    "deploymentInput": {
+                        "parallelExecution": {
+                            "parallelExecutionType": 0
+                        },
+                        "agentSpecification": {
+                            "identifier": "vs2017-win2016"
+                        },
+                        "skipArtifactsDownload": false,
+                        "artifactsDownloadInput": {
+                            "downloadInputs": []
+                        },
+                        "queueId": 9,
+                        "demands": [],
+                        "enableAccessToken": false,
+                        "timeoutInMinutes": 0,
+                        "jobCancelTimeoutInMinutes": 1,
+                        "condition": "succeeded()",
+                        "overrideInputs": {}
+                    },
+                    "rank": 1,
+                    "phaseType": 1,
+                    "name": "Agent job",
+                    "refName": null,
+                    "workflowTasks": [
+                        {
+                            "environment": {},
+                            "taskId": "a8515ec8-7254-4ffd-912c-86772e2b5962",
+                            "version": "3.*",
+                            "name": "Replace tokens in **/*.yml",
+                            "refName": "",
+                            "enabled": true,
+                            "alwaysRun": false,
+                            "continueOnError": false,
+                            "timeoutInMinutes": 0,
+                            "definitionType": "task",
+                            "overrideInputs": {},
+                            "condition": "succeeded()",
+                            "inputs": {
+                                "rootDirectory": "$(System.DefaultWorkingDirectory)/customer-dotnet-image/drop",
+                                "targetFiles": "**/*.yml",
+                                "encoding": "auto",
+                                "writeBOM": "true",
+                                "escapeType": "auto",
+                                "escapeChar": "",
+                                "charsToEscape": "",
+                                "verbosity": "normal",
+                                "actionOnMissing": "warn",
+                                "keepToken": "false",
+                                "tokenPrefix": "#{",
+                                "tokenSuffix": "}#",
+                                "emptyValue": "(empty)"
+                            }
+                        },
+                        {
+                            "environment": {},
+                            "taskId": "cbc316a2-586f-4def-be79-488a1f503564",
+                            "version": "1.*",
+                            "name": "kubectl apply ",
+                            "refName": "",
+                            "enabled": true,
+                            "alwaysRun": false,
+                            "continueOnError": false,
+                            "timeoutInMinutes": 0,
+                            "definitionType": "task",
+                            "overrideInputs": {},
+                            "condition": "succeeded()",
+                            "inputs": {
+                                "connectionType": "Kubernetes Service Connection",
+                                "kubernetesServiceEndpoint": "a5da1279-4330-478e-b4c1-6bdc1af0e89a",
+                                "azureSubscriptionEndpoint": "",
+                                "azureResourceGroup": "",
+                                "kubernetesCluster": "",
+                                "useClusterAdmin": "false",
+                                "namespace": "tutorial",
+                                "command": "apply ",
+                                "useConfigurationFile": "false",
+                                "configurationType": "configuration",
+                                "configuration": "",
+                                "inline": "",
+                                "arguments": "-f Deployment-v2-azure.yml",
+                                "secretType": "dockerRegistry",
+                                "secretArguments": "",
+                                "containerRegistryType": "Azure Container Registry",
+                                "dockerRegistryEndpoint": "",
+                                "azureSubscriptionEndpointForSecrets": "",
+                                "azureContainerRegistry": "",
+                                "secretName": "",
+                                "forceUpdate": "true",
+                                "configMapName": "",
+                                "forceUpdateConfigMap": "false",
+                                "useConfigMapFile": "false",
+                                "configMapFile": "",
+                                "configMapArguments": "",
+                                "versionOrLocation": "version",
+                                "versionSpec": "1.13.2",
+                                "checkLatest": "false",
+                                "specifyLocation": "",
+                                "cwd": "$(System.DefaultWorkingDirectory)/customer-dotnet-image/drop",
+                                "outputFormat": "json"
+                            }
+                        }
+                    ]
+                }
+            ],
+            "environmentOptions": {
+                "emailNotificationType": "OnlyOnFailure",
+                "emailRecipients": "release.environment.owner;release.creator",
+                "skipArtifactsDownload": false,
+                "timeoutInMinutes": 0,
+                "enableAccessToken": false,
+                "publishDeploymentStatus": true,
+                "badgeEnabled": false,
+                "autoLinkWorkItems": false,
+                "pullRequestDeploymentEnabled": false
+            },
+            "demands": [],
+            "conditions": [
+                {
+                    "name": "ReleaseStarted",
+                    "conditionType": 1,
+                    "value": ""
+                }
+            ],
+            "executionPolicy": {
+                "concurrencyCount": 1,
+                "queueDepthCount": 0
+            },
+            "schedules": [],
+            "currentRelease": {
+                "id": 16,
+                "url": "https://vsrm.dev.azure.com/mhildenb/a66b2b16-7e59-4a95-90e3-822c5d1aeb1d/_apis/Release/releases/16",
+                "_links": {}
+            },
+            "retentionPolicy": {
+                "daysToKeep": 30,
+                "releasesToKeep": 3,
+                "retainBuild": true
+            },
+            "processParameters": {},
+            "properties": {
+                "BoardsEnvironmentType": {
+                    "$type": "System.String",
+                    "$value": "unmapped"
+                },
+                "LinkBoardsWorkItems": {
+                    "$type": "System.String",
+                    "$value": "False"
+                }
+            },
+            "preDeploymentGates": {
+                "id": 0,
+                "gatesOptions": null,
+                "gates": []
+            },
+            "postDeploymentGates": {
+                "id": 0,
+                "gatesOptions": null,
+                "gates": []
+            },
+            "environmentTriggers": [],
+            "badgeUrl": "https://vsrm.dev.azure.com/mhildenb/_apis/public/Release/badge/a66b2b16-7e59-4a95-90e3-822c5d1aeb1d/1/1"
+        }
+    ],
+    "artifacts": [
+        {
+            "sourceId": "a66b2b16-7e59-4a95-90e3-822c5d1aeb1d:2",
+            "type": "Build",
+            "alias": "customer-dotnet-image",
+            "definitionReference": {
+                "artifactSourceDefinitionUrl": {
+                    "id": "https://dev.azure.com/mhildenb/_permalink/_build/index?collectionId=8e7b4082-01f4-45aa-a0a6-7fea630240a3&projectId=a66b2b16-7e59-4a95-90e3-822c5d1aeb1d&definitionId=2",
+                    "name": ""
+                },
+                "defaultVersionBranch": {
+                    "id": "",
+                    "name": ""
+                },
+                "defaultVersionSpecific": {
+                    "id": "",
+                    "name": ""
+                },
+                "defaultVersionTags": {
+                    "id": "",
+                    "name": ""
+                },
+                "defaultVersionType": {
+                    "id": "latestType",
+                    "name": "Latest"
+                },
+                "definition": {
+                    "id": "2",
+                    "name": "ato-pipeline-demo"
+                },
+                "definitions": {
+                    "id": "",
+                    "name": ""
+                },
+                "IsMultiDefinitionType": {
+                    "id": "False",
+                    "name": "False"
+                },
+                "project": {
+                    "id": "a66b2b16-7e59-4a95-90e3-822c5d1aeb1d",
+                    "name": "ato-pipeline-demo"
+                },
+                "repository": {
+                    "id": "",
+                    "name": ""
+                }
+            },
+            "isPrimary": true,
+            "isRetained": false
+        }
+    ],
+    "triggers": [
+        {
+            "artifactAlias": "customer-dotnet-image",
+            "triggerConditions": [],
+            "triggerType": 1
+        }
+    ],
+    "releaseNameFormat": "Release-$(rev:r)",
+    "tags": [],
+    "properties": {
+        "DefinitionCreationSource": {
+            "$type": "System.String",
+            "$value": "ReleaseNew"
+        },
+        "IntegrateBoardsWorkItems": {
+            "$type": "System.String",
+            "$value": "False"
+        },
+        "IntegrateJiraWorkItems": {
+            "$type": "System.String",
+            "$value": "false"
+        }
+    },
+    "id": 1,
+    "name": "customer-dotnet-releases",
+    "path": "\\",
+    "projectReference": null,
+    "url": "https://vsrm.dev.azure.com/mhildenb/a66b2b16-7e59-4a95-90e3-822c5d1aeb1d/_apis/Release/definitions/1",
+    "_links": {
+        "self": {
+            "href": "https://vsrm.dev.azure.com/mhildenb/a66b2b16-7e59-4a95-90e3-822c5d1aeb1d/_apis/Release/definitions/1"
+        },
+        "web": {
+            "href": "https://dev.azure.com/mhildenb/a66b2b16-7e59-4a95-90e3-822c5d1aeb1d/_release?definitionId=1"
+        }
+    }
+}

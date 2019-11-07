@@ -1,0 +1,55 @@
+# ASP.NET Core
+# Build and test ASP.NET Core projects targeting .NET Core.
+# Add steps that run tests, create a NuGet package, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+- Demo_Deploy
+
+pool:
+  vmImage: 'ubuntu-16.04' # examples of other options: 'macOS-10.13', 'vs2017-win2016'
+
+variables:
+  buildConfiguration: 'Debug'
+  customerProjectPath: customer/dotnet/
+  kubernetesDeploymentYamlPath: customer/kubernetes
+
+
+steps:
+# do this before all your .NET Core tasks
+- task: DotNetCoreInstaller@0
+  inputs:
+    version: '2.2.105' # replace this value with the version that you need for your project
+
+#- script: dotnet restore
+#  workingDirectory: $(customerProjectPath)
+  
+#- script: dotnet build --configuration $(buildConfiguration)
+#  displayName: 'dotnet build $(buildConfiguration)'
+#  workingDirectory: $(customerProjectPath)
+
+# publish the binaries for release (in container)
+- script: ./pub.sh $(buildConfiguration)
+  displayName: Prepare for publishing $(buildConfiguration)
+  workingDirectory: $(customerProjectPath)
+
+# Build the docker image
+- task: Docker@2
+  inputs:
+    containerRegistry: 'DockerHub (mhildema)'
+    repository: 'mhildema/customer-dotnet'
+    command: 'buildAndPush'
+    Dockerfile: '$(customerProjectPath)/Dockerfile'
+    buildContext: '$(customerProjectPath)'
+    tags: 'v$(Build.BuildId)'
+
+# Copy Deployment YAML files
+- task: CopyFiles@2
+  inputs:
+    sourceFolder: '$(kubernetesDeploymentYamlPath)'
+    contents: '**/Deployment*.yml'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    artifactName: drop

@@ -1,0 +1,43 @@
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: >
+      {"apiVersion":"networking.k8s.io/v1","kind":"NetworkPolicy","metadata":{"annotations":{"maistra.io/mesh-generation":"1"},"labels":{"app":"istio","app.kubernetes.io/component":"istio","app.kubernetes.io/instance":"istio-system","app.kubernetes.io/managed-by":"maistra-istio-operator","app.kubernetes.io/name":"istio","app.kubernetes.io/part-of":"istio","app.kubernetes.io/version":"1","chart":"istio","heritage":"Tiller","maistra-version":"1.0.0","maistra.io/owner":"istio-system","release":"istio"},"name":"istio-mesh","namespace":"istio-system","ownerReferences":[{"apiVersion":"maistra.io/v1","blockOwnerDeletion":true,"controller":true,"kind":"ServiceMeshControlPlane","name":"service-mesh-installation","uid":"3e836c24-e8b8-11e9-97db-02ebb38d875c"}]},"spec":{"egress":[{"to":[{"namespaceSelector":{"matchLabels":{"maistra.io/member-of":"istio-system"}}}]}],"ingress":[{"from":[{"namespaceSelector":{"matchLabels":{"maistra.io/member-of":"istio-system"}}}]}]}}
+    maistra.io/mesh-generation: '1'
+  selfLink: /apis/networking.k8s.io/v1/namespaces/tutorial/networkpolicies/istio-mesh
+  resourceVersion: '716393'
+  name: istio-mesh
+  uid: d940e82a-e96f-11e9-a9e8-0ae281e0d122
+  creationTimestamp: '2019-10-08T02:03:40Z'
+  generation: 1
+  namespace: tutorial
+  labels:
+    app: istio
+    app.kubernetes.io/part-of: istio
+    app.kubernetes.io/instance: istio-system
+    release: istio
+    maistra.io/member-of: istio-system
+    app.kubernetes.io/version: '1'
+    app.kubernetes.io/component: istio
+    maistra-version: 1.0.0
+    app.kubernetes.io/managed-by: maistra-istio-operator
+    maistra.io/owner: istio-system
+    app.kubernetes.io/name: istio
+    chart: istio
+    heritage: Tiller
+spec:
+  podSelector: {}
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              maistra.io/member-of: istio-system
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              maistra.io/member-of: istio-system
+  policyTypes:
+    - Ingress
+    - Egress

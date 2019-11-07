@@ -1,0 +1,56 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: customer
+    version: v1
+  name: customer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: customer
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: customer
+        version: v1
+      annotations:
+        sidecar.istio.io/inject: "true"
+    spec:
+      containers:
+      - env:
+        - name: JAVA_OPTIONS
+          value: -Xms15m -Xmx15m -Xmn15m -Xrunjdwp:transport=dt_socket,address=5000,server=y,suspend=n
+        name: customer
+        image: quay.io/rhdevelopers/istio-tutorial-customer:v1
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        - containerPort: 8778
+          name: jolokia
+          protocol: TCP
+        - containerPort: 9779
+          name: prometheus
+          protocol: TCP
+        livenessProbe:
+          exec:
+            command:
+            - curl
+            - localhost:8080/health          
+          initialDelaySeconds: 3
+          periodSeconds: 5
+          timeoutSeconds: 5
+        readinessProbe:
+          exec:
+            command:
+            - curl
+            - localhost:8080/health          
+          initialDelaySeconds: 3
+          periodSeconds: 5
+          timeoutSeconds: 5
+        securityContext:
+          privileged: false

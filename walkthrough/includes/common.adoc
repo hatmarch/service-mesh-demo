@@ -1,0 +1,10 @@
+[NOTE]
+====
+*Common commands*
+
+----
+alias cdd="cd /Users/marc.hildenbrand/Documents/Development/istio-tutorial/scripts/ato-demo-version-03"
+alias cdt='cd /Users/marc.hildenbrand/Documents/Development/istio-tutorial'
+oc login -u kubeadmin -p k66Bq-9utfJ-xwdBB-cEVKi --server=https://api.ato-demo-replica.openshifttc.com:6443
+----
+====

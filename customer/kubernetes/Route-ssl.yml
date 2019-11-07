@@ -1,0 +1,21 @@
+# Represents a separate dedicated SSL route that goes to it's own dedicated service
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: customer-ssl
+  labels:
+    app: customer
+spec:
+  # FIXME: This is specific to a host!
+  host: customer-tutorial-ssl.apps.ato-demo-replica.openshifttc.com
+  subdomain: ''
+  to:
+    kind: Service
+    name: customer-ssl
+    weight: 100
+  port:
+    targetPort: https
+  tls:
+    termination: passthrough
+    insecureEdgeTerminationPolicy: Redirect
+  wildcardPolicy: None

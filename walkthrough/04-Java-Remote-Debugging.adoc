@@ -1,0 +1,126 @@
+= Java Remote Debugging
+include::includes/common.adoc[]
+
+We want to see for ourselves what is causing the error coming back from the recommendation pod.
+
+[.underline]#Pre-req#
+----
+# Tutorial project should exist
+
+# Service Mesh should be active on Tutorial (with sidecars)
+
+# Recommendation v2 should be running and mirrored
+
+# preference load should be running in shell
+cdd
+./ato-load-gen.sh preference
+----
+
+== Find the Error
+
+* First notice that link:https://jaeger-istio-system.apps.ato-demo-replica.openshifttc.com/search?end=1570519910179000&limit=20&lookback=1h&maxDuration&minDuration&service=preference&start=1570516310179000[Jaeger] is still reporting errors
+** See what the mirroring looks like
+** So if traffic is still getting routed to the pod, then we should be able to catch it in the debugger
+
+== Start up Visual Studio Code
+* Start VS Code in the working directory 
+----
+cdt
+cd recommendation/java/quarkus
+code .
+----
+
+* Select *Open Folder in Container*
+
+image::images/vscode_initialopen.png[]
+
+* Show the development container: *Dockerfile*
+** point out maven
+** sdk
+* Show *.devcontainer.json*
+** show the kubernetes and java plugins
+** show the args for the volume mount to get to user's home directory
+** Spoiler: and the environment variable!
+
+* Open the RecommendationResource.java and set breakpoint to: 
+** public Response getRecommendations()
+
+* Open Kubernetes extension
+** Select cluster
+** Select Workloads
+** Select Pods
+
+image::images/Kubernetes-Extension.png[]
+
+* Find the Recommendation-v2 pod, right click and select attach
+** Select Java
+** Select the recommendation container (and not the side car)
+
+== Hitting the breakpoint and fixing
+* Wait until breakpoint is hit
+** show count in watch window
+** Might be a little bit slow
+
+* Walk through where the error is
+** search for where 'misbehave' is set
+** Notice it's from an ENVIRONMENT Variable
+
+* Change the default from "true" to "false"
+
+* Recompile the sources (*in VSCode bash*)
+----
+mvn clean install
+----
+
+image::images/run_maven.png[]
+
+* Discuss how this container could now be built
+** Show the other Dockerfile that is NOT in .devcontainer
+
+== Meanwhile: Quick fix in production
+
+Since the problem is with and environment variable, this is something we can change
+
+* Change the Environment Variable
+** Can do in OpenShift directly
+
+image::images/Misbehave_False.png[]
+
+** Add the new "MISBEHAVE" environment variable and set to *false*
+** Hit save.  
+** _Notice that pod is destroyed and recreated_
+
+* Check link:https://jaeger-istio-system.apps.ato-demo-replica.openshifttc.com/search?end=1570535773031000&limit=20&lookback=1h&maxDuration&minDuration&service=preference&start=1570532173031000[Jaeger]
+** Notice no errors
+** Hit "Find Traces" multiple times to see if there's any change
+
+== Re-expose service
+
+* Start by routing 10%
+** _Notice that this is the same virtual service we tried to start with before_
+----
+cdt
+oc apply -f istiofiles/virtual-service-recommendation-v1_and_v2.yml
+----
+
+* _Shell_: Notice some v2 creeping in
+
+* Change routing to 50/50
+----
+cdt
+oc apply -f istiofiles/virtual-service-recommendation-v1_and_v2_50_50.yml 
+----
+
+* Check Kiali
+** Notice that this whole time the mirror service has not counted
+** Notice that traffic is now shown to be flowing to v2
+
+* Simulate build and deploy
+----
+cdt
+oc apply -f recommendation/kubernetes/Deployment-v2.yml
+----
+
+** _Shell:_ Notice that it takes a while for the new deployment to come up, and without the "buggy" message
+
+[.underline]#Next# We'll look to deploy a new customer model and put the whole thing behind the service mesh

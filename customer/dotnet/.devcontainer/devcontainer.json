@@ -1,0 +1,34 @@
+{
+	"name": "C# (.NET Core 2.2)",
+	"dockerFile": "Dockerfile",
+	
+	// Use 'settings' to set *default* container specific settings.json values on container create. 
+	// You can edit these settings after create using File > Preferences > Settings > Remote.
+	"settings": { 
+		"terminal.integrated.shell.linux": "/bin/bash"
+	},
+	
+	"runArgs": [ 
+		// Where our encrypted files are to be mounted (mirrors OpenShift)
+		"-v", "/Users/marc.hildenbrand/Downloads/demo/ato-pipeline-demo/secrets:/cert-secret",
+		"-v", "/Users/marc.hildenbrand/.kube:/root/.kube",
+		"--env", "ASPNETCORE_URLS=https://*:10443;http://*:8080",
+		"--env", "ASPNETCORE_HTTPS_PORT=10443"
+
+		// Uncomment the next line to use a non-root user. On Linux, this will prevent
+		// new files getting created as root, but you may need to update the USER_UID
+		// and USER_GID in .devcontainer/Dockerfile to match your user if not 1000.
+		//, "-u", "vscode"
+	],
+
+	// Port mappings from the dev container to the localhost
+	"appPort": ["52000:8080", "52001:10443"],
+
+	// Uncomment the next line to run commands after the container is created.
+	// "postCreateCommand": "dotnet restore"
+
+	// Add the IDs of extensions you want installed when the container is created in the array below.
+	"extensions": [
+		"ms-vscode.csharp"
+	]
+}
