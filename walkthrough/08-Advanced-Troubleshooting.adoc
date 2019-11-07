@@ -21,7 +21,7 @@ oc apply -f customer/kubernetes/Route-ssl.yml
 
 # NOTE: route-ssl may have a specific host in it that should be changed
 # Turn off Istio Lockdown
-oc delete -f scripts/ato-demo-version-03/network-policy.yaml
+oc delete -f scripts/network-policy.yaml
 oc apply -f customer/kubernetes/Deployment-v2-ssl-buggy.yml
 ----
 

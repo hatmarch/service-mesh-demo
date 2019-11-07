@@ -1,0 +1,45 @@
+﻿# NOTE: Need to change the enpoint urls per cluster.
+# NOTE: insecure_skip_verify added (seems to defined here: https://github.com/kiali/kiali/blob/master/operator/deploy/kiali/kiali_cr.yaml#L262)
+apiVersion: kiali.io/v1alpha1
+kind: Kiali
+metadata:
+  creationTimestamp: '2019-11-07T12:12:01Z'
+  finalizers:
+    - finalizer.kiali
+  generation: 8
+  name: kiali
+  namespace: istio-operator
+  resourceVersion: '1945437'
+  selfLink: /apis/kiali.io/v1alpha1/namespaces/istio-operator/kialis/kiali
+  uid: cdb886fb-0157-11ea-8b63-0232b54a5132
+spec:
+  deployment:
+    namespace: istio-system
+    verbose_mode: '4'
+    view_only_mode: false
+  external_services:
+    grafana:
+      url: 'https://grafana-openshift-monitoring.apps.cloes.openshifttc.com/'
+    prometheus:
+      auth:
+        insecure_skip_verify: true
+      url: 'https://prometheus-istio-system.apps.cloes.openshifttc.com'
+    tracing:
+      url: ''
+  installation_tag: My Kiali
+  istio_namespace: istio-system
+  server:
+    web_root: /mykiali
+status:
+  conditions:
+    - ansibleResult:
+        changed: 2
+        completion: '2019-11-07T12:55:49.2054'
+        failures: 0
+        ok: 169
+        skipped: 38
+      lastTransitionTime: '2019-11-07T12:12:01Z'
+      message: Awaiting next reconciliation
+      reason: Successful
+      status: 'True'
+      type: Running
