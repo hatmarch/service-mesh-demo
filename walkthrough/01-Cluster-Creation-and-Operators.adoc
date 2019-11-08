@@ -8,6 +8,12 @@ It is easy to use Installer Provisioned Infrastructure to create a small OpenShi
 We'll install Service Mesh (and it's pre-req)
 We'll learn the basics of the toy project in this section
 
+=== Installing pre-req operators
+See link:https://learning.redhat.com/mod/scorm/player.php?scoid=2877&cm=5623&display=popup[this] lab in the RedHat LMS.
+
+Changes from the LMS:
+* there is now a ServiceMesh operator available from operator hub (but you still need to create istio-system project and use the service-mesh.yml file in this project)
+
 include::includes/common.adoc[]
 
 Pre-reqs
