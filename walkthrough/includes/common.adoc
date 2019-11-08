@@ -1,6 +1,6 @@
 [NOTE]
 ====
-Login credentials are link:https://mhildenb-public-stuff.s3-ap-southeast-2.amazonaws.com/Demo.html[here]
+Login credentials are link:https://mhildenb-public-stuff.s3-ap-southeast-2.amazonaws.com/ServiceMeshDemo.html[here]
 
 *Common commands*
 ----
