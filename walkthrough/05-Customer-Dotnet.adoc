@@ -139,7 +139,7 @@ curl localhost:52000
 
 WARNING: Before you deploy you need to make sure the service account has been created and the token updated
 ----
-scripts/ato-demo-version-03/ato-create-deployer-service-account.sh
+scripts/ato-create-deployer-service-account.sh
 
 oc get sa azure-deploy -o yaml
 oc get secret azure-deploy-token-vwmm4 -o yaml

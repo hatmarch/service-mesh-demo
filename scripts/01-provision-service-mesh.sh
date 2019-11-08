@@ -16,10 +16,10 @@ if [ "$COMPLETE" != "y" ]; then
     exit 1
 fi
 
-# now install our control plane (operator we set up previously is listening for this control-plane.yml file
+# now install our control plane (operator we set up previously is listening for this service-mesh.yml file
 # that represents the features of istio that we want turned on/off)
 oc adm new-project istio-system --display-name="Service Mesh System"
-oc apply -f control-plane.yml -n istio-system
+oc apply -f service-mesh.yml -n istio-system
 
 # install the ServiceMeshMemoryRoll resource which will 
 # define which projects will participate in the service mesh (and thus will have sidecar injected into them)

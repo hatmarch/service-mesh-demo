@@ -44,7 +44,7 @@ image:images/azure_edit_release.png[]
 
 * Show Kubernetes (OpenShift) link:https://dev.azure.com/mhildenb/ato-pipeline-demo/_settings/adminservices?resourceId=a5da1279-4330-478e-b4c1-6bdc1af0e89a&resource=%5Bobject%20Object%5D&_a=resources[connection settings]
 ** Mention that to setup
-** Need to associate service account and give edit rights to project (see also: scripts/ato-demo-version-03/02-ato-no-service-mesh-setup.sh)
+** Need to associate service account and give edit rights to project (see also: scripts/02-ato-no-service-mesh-setup.sh)
 ** Need to get a token for that service account
 
 * Key point is that the deployment.yml is updated with the recent build tag
