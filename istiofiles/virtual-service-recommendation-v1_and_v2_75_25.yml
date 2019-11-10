@@ -15,4 +15,9 @@ spec:
         host: recommendation
         subset: version-v2
       weight: 25
+# hack to prevent automatic retries for errors on this service
+    retries:
+      attempts: 1
+      perTryTimeout: 5s
+      retryOn: "506"
 ---

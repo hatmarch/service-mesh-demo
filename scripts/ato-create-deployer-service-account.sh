@@ -1,7 +1,10 @@
 #!/bin/bash
 # NOTE: This script requires that one is logged into OCP with sufficient privileges
 
-oc project tutorial
+# should come from the higher order script that calls this
+echo "Project is $NAMESPACE"
+
+oc project $NAMESPACE
 
 # NOTE: If this account doesn't exist, you will need to setup token again (see below)
 # If the service account is deleted you will need to setup service account tokens (e.g. with Azure pipelines)

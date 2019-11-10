@@ -11,10 +11,10 @@ spec:
         host: preference
         subset: version-v1
       weight: 100
-    - destination:
-        host: preference
-        subset: version-v2
-      weight: 0
+#    - destination:
+#        host: preference
+#        subset: version-v2
+#     weight: 0
     retries:
       attempts: 5
       perTryTimeout: 5s

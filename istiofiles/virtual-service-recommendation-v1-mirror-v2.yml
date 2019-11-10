@@ -13,4 +13,8 @@ spec:
     mirror:
       host: recommendation
       subset: version-v2
+    retries:
+      attempts: 3
+      perTryTimeout: 5s
+      retryOn: "506"
 ---
