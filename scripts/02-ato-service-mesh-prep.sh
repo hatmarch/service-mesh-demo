@@ -1,15 +1,18 @@
 #!/bin/bash
 # NOTE: This script requires that one is logged into OCP with sufficient privileges
 
-PROJECT='tutorial'
+SCRIPT_DIR=$(dirname $0)
+DEMO_HOME=$SCRIPT_DIR/..
 
-# stop service mesh on project
-# delete Service Mesh Roll
-ORIG_DIR=`pwd`
-RELATIVE_SCRIPT_DIR=`dirname "$0"`
+NAMESPACE=$1
+
+if [ -z $1 ]; then
+    echo "Didn't specify a namespace, setting to 'demo-app'"
+    NAMESPACE="demo-app"
+fi
 
 # gets rid of virtual services
-"$RELATIVE_SCRIPT_DIR/ato-stop-service-mesh.sh" $PROJECT
+${SCRIPT_DIR}/ato-stop-service-mesh.sh $NAMESPACE
 
 # delete any of the pods
-oc delete project $PROJECT
+oc delete project $NAMESPACE

@@ -17,14 +17,9 @@ spec:
     - destination:
         host: customer
         subset: version-v1
-      weight: 50
+      weight: 0
     - destination:
         host: customer
         subset: version-v2
-      weight: 50
-# hack to stop retries
-    retries:
-      attempts: 1
-      perTryTimeout: 5s
-      retryOn: "506"
+      weight: 100
 ---

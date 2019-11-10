@@ -1,0 +1,28 @@
+= OpenShift Meetup: November 2019
+
+include:includes/common.adoc[]
+
+Pre-requisites
+====
+1. Make sure ServiceMesh Operator is installed on cluster
+2. Run link:scripts/01-provision-service-mesh.sh[01-provision-service-mesh.sh] to start up the service mesh control plane (once fully installed)
+3. Run link:scripts/02-project-no-service-mesh-setup.sh[02-project-no-service-mesh-setup.sh] to create the project with the toy app
+3. Run link:scripts/03-project-apply-service-mesh.sh[03-project-apply-service-mesh.sh] to add the toy app to the service mesh
+
+Make sure the toy app has sidecars installed
+====
+== Runtime Complexity
+
+Our toy app has some problems out of the gate.  Let's run calls to it in a window and then use the ability to visualize the service mesh to pick apart what's going on
+
+1. In a shell window where you are logged into the OpenShift cluster, run the following
+----
+$ cdh
+$ ./project-load-gen.sh customer istio
+Starting load gen for istio-ingressgateway-istio-system.apps.service-mesh.openshifttc.com/customer.  Proceed? (y/N)
+----
+
+2. Observe the output
+
+3. Open Kiali
+

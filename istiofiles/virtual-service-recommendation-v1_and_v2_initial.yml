@@ -1,30 +1,24 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: customer
+  name: recommendation
 spec:
   hosts:
-  - "*"
-  gateways:
-  - customer-gateway
+  - recommendation
   http:
-  - match:
-    - uri:
-        prefix: /customer
-    rewrite:
-      uri: /
-    route:
+  - route:
     - destination:
-        host: customer
+        host: recommendation
         subset: version-v1
       weight: 50
     - destination:
-        host: customer
+        host: recommendation
         subset: version-v2
       weight: 50
-# hack to stop retries
     retries:
-      attempts: 1
+      attempts: 3
       perTryTimeout: 5s
       retryOn: "506"
+#      retriableStatusCodes: "503"
+
 ---

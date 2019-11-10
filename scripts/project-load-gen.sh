@@ -1,8 +1,10 @@
 #!/bin/bash
 
+PROJECT="demo-app"
+
 ROUTE=$1
 if [ -z "$ROUTE" ]; then
-    echo "Must specify the short name of a route (and optionally whether to use istio gateway.)"
+    echo "Must specify the *short name* of a route (and optionally whether to use istio gateway.)"
     exit 1
 fi
 
@@ -10,7 +12,7 @@ fi
 if [ "$2" == 'istio' ]; then
     URL="$(oc -n istio-system get route istio-ingressgateway -o jsonpath='{.spec.host}')/$ROUTE"
 else
-    URL="$(oc -n tutorial get route $ROUTE -o jsonpath='{.spec.host}')"
+    URL="$(oc -n $PROJECT get route $ROUTE -o jsonpath='{.spec.host}')"
 fi
 
 read -n 1 -p "Starting load gen for $URL.  Proceed? (y/N)" COMPLETE
