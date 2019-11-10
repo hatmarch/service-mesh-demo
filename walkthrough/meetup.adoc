@@ -189,4 +189,7 @@ image:images/kiali-recommendation-75-25.png[]
 
 == Security
 
-Let's pretend
+Let's pretend that we discover that the customer service should never be calling the recommendation service directly.  We can enforce this by setting up access rules that ensure a given path through the system
+
+== Other Opportunities
+
