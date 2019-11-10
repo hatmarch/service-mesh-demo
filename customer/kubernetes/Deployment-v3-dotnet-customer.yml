@@ -3,24 +3,26 @@ kind: Deployment
 metadata:
   labels:
     app: customer
-    version: v2
-  name: customer-v2
+    version: v3
+  name: customer-v3
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: customer
-      version: v2
+      version: v3
   template:
     metadata:
       labels:
         app: customer
-        version: v2
+        version: v3
       annotations:
         sidecar.istio.io/inject: "true"
     spec:
       containers:
       - env:
+        - name: MESSAGE_OVERRIDE
+          value: "Safari is the best browser!"
         name: customer
         # This is the last built one from the coles demo
         image: docker.io/mhildema/customer:v3.0

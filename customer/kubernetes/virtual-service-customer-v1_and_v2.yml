@@ -8,6 +8,23 @@ spec:
   gateways:
   - customer-gateway
   http:
+#   - match:
+#     - headers:
+#         user_agent:
+#           exact: Safari
+#     - uri:
+#         prefix: /customer
+#     rewrite:
+#       uri: /
+#     route:
+#     - destination:
+#         host: customer
+#         subset: version-v3
+# # hack to stop retries
+#     retries:
+#       attempts: 1
+#       perTryTimeout: 5s
+#       retryOn: "506"
   - match:
     - uri:
         prefix: /customer
@@ -22,9 +39,9 @@ spec:
         host: customer
         subset: version-v2
       weight: 50
-# hack to stop retries
     retries:
       attempts: 1
       perTryTimeout: 5s
       retryOn: "506"
+
 ---
