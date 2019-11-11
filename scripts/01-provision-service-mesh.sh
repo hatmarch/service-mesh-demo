@@ -2,16 +2,19 @@
 
 # MANUAL STEPS using Operator Hub, apply the service mesh operator to all projects
 
+SCRIPT_DIR=$(dirname $0)
+DEMO_HOME=$SCRIPT_DIR/..
+
 oc delete project istio-system
 
 # now install our control plane (operator we set up previously is listening for this service-mesh.yml file
 # that represents the features of istio that we want turned on/off)
 oc adm new-project istio-system --display-name="Service Mesh System"
-oc apply -f service-mesh.yml -n istio-system
+oc apply -f ${SCRIPT_DIR}/service-mesh.yaml -n istio-system
 
 # install the ServiceMeshMemoryRoll resource which will 
 # define which projects will participate in the service mesh (and thus will have sidecar injected into them)
-oc apply -f service-mesh-roll.yml -n istio-system
+oc apply -f ${SCRIPT_DIR}/service-mesh-roll.yaml -n istio-system
 
 printf "Move on to the next script once all the following pods have been created:\n
 grafana-b67df64b6-dwx44                \n
@@ -26,3 +29,5 @@ istio-telemetry-69cb778b9-j4xhw        \n
 jaeger-57776787bc-j8rq8                \n
 kiali-6d6f9cf658-sthwl                 \n
 prometheus-b8bdc6b77-kpgtn             \n"
+
+oc get pods -n istio-system -w
