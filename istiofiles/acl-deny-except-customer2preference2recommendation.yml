@@ -4,7 +4,7 @@ metadata:
   name: do-not-pass-go
 spec:
   status:
-    code: 7
+    code: 14
     message: Customer -> Preference -> Recommendation ONLY
 ---
 apiVersion: "config.istio.io/v1alpha2"

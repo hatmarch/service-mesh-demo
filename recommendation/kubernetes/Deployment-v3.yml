@@ -16,39 +16,24 @@ spec:
       labels:
         app: recommendation
         version: v3
+      annotations:
+        sidecar.istio.io/inject: "true"
     spec:
       containers:
       - env:
-        - name: JAVA_OPTIONS
-          value: -Xms15m -Xmx15m -Xmn15m
-        image: quay.io/rhdevelopers/istio-tutorial-recommendation:v3
+        - name: MESSAGE_OVERRIDE
+          value: "iPhones are the best.  Tim Cook says hello."
+        name: customer
+        # This is the last built one from the coles demo
+        image: docker.io/mhildema/customer:v3.0
         imagePullPolicy: IfNotPresent
-        livenessProbe:
-          exec:
-            command:
-            - curl
-            - localhost:8080/health
-          initialDelaySeconds: 3
-          periodSeconds: 1
-          timeoutSeconds: 5
-        name: recommendation
         ports:
         - containerPort: 8080
           name: http
           protocol: TCP
-        - containerPort: 8778
-          name: jolokia
-          protocol: TCP
         - containerPort: 9779
           name: prometheus
           protocol: TCP
-        readinessProbe:
-          exec:
-            command:
-            - curl
-            - localhost:8080/health
-          initialDelaySeconds: 3
-          periodSeconds: 1
-          timeoutSeconds: 5
         securityContext:
           privileged: false
+

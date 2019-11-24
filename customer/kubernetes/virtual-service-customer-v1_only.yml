@@ -35,5 +35,8 @@ spec:
         host: customer
         subset: version-v2
       weight: 00
-
+    retries: 
+      attempts: 1
+      perTryTimeout: 5s
+      retryOn: "506"
 # ---

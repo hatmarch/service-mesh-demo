@@ -16,7 +16,8 @@ Window Setup: Visible
 ====
 1. A shell for running the load script continuously
 2. A shell for running one off commands and displaying contents of yaml
-3. A browser with tabs for Kiali, Jaeger, endpoints, and link:file:/Users/marc.hildenbrand/Documents/Development/service-mesh-demo/walkthrough/meetup.adoc[this script]
+3. *IMPORTANT:* A browser with tabs for Kiali, Jaeger, endpoints, and link:file:/Users/marc.hildenbrand/Documents/Development/service-mesh-demo/walkthrough/meetup.adoc[this script]
+** If you don't have Jaeger and Kiali open then you haven't accepted the cert and it can cause other parts of the demo to fail
 4. VSCode with the Java Project
 ====
 
@@ -191,9 +192,44 @@ image:images/kiali-recommendation-75-25.png[]
 
 Let's pretend that we discover that the customer service should never be calling the recommendation service directly.  We can enforce this by setting up access rules that ensure a given path through the system
 
+1. First lets take a look at the file and highlight the areas below
 ----
-$ oc apply -f /Users/marc.hildenbrand/Documents/Development/service-mesh-demo/istiofiles/acl-deny-except-customer2preference2recommendation.yml
+$ cat /Users/marc.hildenbrand/Documents/Development/service-mesh-demo/istiofiles/acl-deny-except-customer2preference2recommendation.yml
 ----
 
+image:images/denier.png[]
+
+1. Now apply the changes to the mesh
+----
+$ oc apply -f /Users/marc.hildenbrand/Documents/Development/service-mesh-demo/istiofiles/acl-deny-except-customer2preference2recommendation.yml 
+----
+
+1. Errors should start to mount.  Find these in Jaeger by searching for *customer*
+
+image:images/jaeger-denier.png[]
+
+2. Get rid of the offending customer service
+----
+$ cdh
+$ cat customer/kubernetes/virtual-service-customer-v1_only.yml
+$ oc apply -f customer/kubernetes/virtual-service-customer-v1_only.yml
+----
+
+3. Go back to Kiali.  The errors should stop
+
 == Other Opportunities
+
+Special message for some
+
+1. Show the file
+
+----
+$ cdh
+$ cat istiofiles/virtual-service-recommendation-header.yml
+$ oc apply -f istiofiles/virtual-service-recommendation-header.yml
+----
+
+2. Ask the audience to navigate to this url: http://bit.ly/os-nov-url
+
+image:images/test-web.png[]
 
