@@ -5,11 +5,8 @@
 SCRIPT_DIR=$(dirname $0)
 DEMO_HOME=$SCRIPT_DIR/..
 
-oc delete project istio-system
-
 # now install our control plane (operator we set up previously is listening for this service-mesh.yml file
 # that represents the features of istio that we want turned on/off)
-oc adm new-project istio-system --display-name="Service Mesh System"
 oc apply -f ${SCRIPT_DIR}/service-mesh.yaml -n istio-system
 
 # install the ServiceMeshMemoryRoll resource which will 

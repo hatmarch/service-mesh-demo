@@ -4,7 +4,16 @@ include:includes/common.adoc[]
 
 Pre-requisites
 ====
-1. Make sure ServiceMesh Operator is installed on cluster
+1. Run link:scripts/00-service-mesh-cluster-install.sh[00-service-mesh-cluster-install.sh] to start the install process for service mesh on the cluster
+* run the following command until you see the corresponding output before you move on to step 2
+----
+$ watch 'oc get csv -n istio-system -ocustom-columns-file=$DEMO_HOME/istiofiles/install/csv-columns.txt'
+NAME                                         VERSION               PHASE
+elasticsearch-operator.4.2.5-201911121709   4.2.5-201911121709   Succeeded
+jaeger-operator.v1.13.1                     1.13.1               Succeeded
+kiali-operator.v1.0.7                       1.0.7                Succeeded
+servicemeshoperator.v1.0.2                  1.0.2                Succeeded
+----
 2. Run link:scripts/01-provision-service-mesh.sh[01-provision-service-mesh.sh] to start up the service mesh control plane (once fully installed)
 3. Run link:scripts/02-project-no-service-mesh-setup.sh[02-project-no-service-mesh-setup.sh] to create the project with the toy app
 3. Run link:scripts/03-project-apply-service-mesh.sh[03-project-apply-service-mesh.sh] to add the toy app to the service mesh
@@ -229,7 +238,7 @@ $ cat istiofiles/virtual-service-recommendation-header.yml
 $ oc apply -f istiofiles/virtual-service-recommendation-header.yml
 ----
 
-2. Ask the audience to navigate to this url: http://bit.ly/os-nov-url
+2. Ask the audience to navigate to this url: http://bit.ly/os-smt-url
 
 image:images/test-web.png[]
 
