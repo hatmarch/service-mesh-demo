@@ -7,5 +7,6 @@ Login credentials are link:https://mhildenb-public-stuff.s3-ap-southeast-2.amazo
 alias cds="cd /Users/marc.hildenbrand/Documents/Development/service-mesh-demo/scripts"
 alias cdh='cd /Users/marc.hildenbrand/Documents/Development/service-mesh-demo'
 oc login -u $USER -p $PASSWORD --server=$SERVER
+export DEMO_HOME='/Users/marc.hildenbrand/Documents/Development/service-mesh-demo'
 ----
 ====
