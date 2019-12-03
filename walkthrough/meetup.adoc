@@ -2,7 +2,7 @@
 
 include:includes/common.adoc[]
 
-Pre-requisites
+[Pre-requisites]
 ====
 1. Run link:scripts/00-service-mesh-cluster-install.sh[00-service-mesh-cluster-install.sh] to start the install process for service mesh on the cluster
 * run the following command until you see the corresponding output before you move on to step 2
@@ -34,6 +34,87 @@ code .
 ** If you don't have Jaeger and Kiali open then you haven't accepted the cert and it can cause other parts of the demo to fail
 4. VSCode with the Java Project
 ====
+
+== Run a build locally
+
+Let's create a springboot application in a container
+
+----
+$ cd $DEMO_HOME/recommendation/java/springboot
+code .
+----
+
+At the prompt, select "Reopen in container".  Show the Dockerfile in the .devcontainer directory and point out that nothing is installed locally
+
+Within a bash shell in the container, run the following commands
+----
+export DEMO_HOME=$(pwd)
+mvn clean install -DskipTests
+----
+
+When the build has completed, then we want to update the recommendation to return a special message that we'll come back to later.  Use Cmd+P to quickly open the *RecommendationController.java* file.  You want to edit the following line.
+
+image:images/Recommendation-v3-change.png[]
+
+You may want that message to come from the audience.
+
+Once the edit is complete, rebuild and run locally with the command
+
+----
+java -Xdebug -Xrunjdwp:transport=dt_socket,address=5000,server=y,suspend=n -jar target/recommendation.jar
+----
+
+Or better, you can debug with the launch.conf.  If not already available, you can try
+----
+cp templates/vscode/* .vscode/
+cp: overwrite ‘.vscode/launch.json’? y
+cp: overwrite ‘.vscode/settings.json’? y
+----
+
+Then you should be able to debug the application by going to the debug tab and pressing the green triangle next as in the picture
+
+image:images/debug-locally.png[]
+
+With Shift+Cmd+P open the command palette and run Forward Ports in container, pick the proper port
+
+image:images/local-port-forward.png[]
+
+Then open with localhost to the forwarded container.
+
+This should break into the debugger (if you set a breakpoint)
+
+== Remote Building to Kubernetes
+
+[NOTE]
+.Important Prerequisites
+====
+Make sure you have setup up to step three in the *pre-requisites* before you attempt to add this deployment
+====
+
+From the vscode shell, run the following command to create a new build and start one
+
+----
+oc new-build --name recommendation-v3 java --binary -l app=recommendation,version=v3
+oc start-build recommendation-v3 --from-file target/*.jar --follow
+----
+
+Explain that this is building within the java container and installing our binary (that we made locally) within it.  Explain that there is S2I built into OpenShift to allow integration with a git container.
+
+Once the build is complete, create a new app for our binary
+
+----
+oc new-app recommendation-v3 -e JAVA_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,address=5000,server=y,suspend=n"
+oc expose svc recommendation-v3
+----
+
+The JAVA_OPTS will ensure that the target pod will run with debugging
+
+Go to the openshift console and show our new recommendation running.  To get the route use:
+----
+$ oc get route recommendation-v3 --no-headers | awk '{ print $2 }'
+----
+
+image:images/recommendation-v3.png[]
 
 == Runtime Complexity
 

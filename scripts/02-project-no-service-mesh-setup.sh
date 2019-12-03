@@ -59,8 +59,8 @@ oc apply -f $DEMO_HOME/recommendation/kubernetes/Deployment.yml  -n $NAMESPACE
 # version 2
 Oc apply -f $DEMO_HOME/recommendation/kubernetes/Deployment-v2-buggy-only.yml -n $NAMESPACE
 
-# version 3
-oc apply -f $DEMO_HOME/recommendation/kubernetes/Deployment-v3.yml -n $NAMESPACE
+# version 3 (NOTE: Don't deploy version 3 by default, we expect to build it)
+# oc apply -f $DEMO_HOME/recommendation/kubernetes/Deployment-v3.yml -n $NAMESPACE
 
 oc apply -f $DEMO_HOME/recommendation/kubernetes/Service.yml  -n $NAMESPACE
 
