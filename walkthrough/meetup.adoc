@@ -5,6 +5,9 @@ include:includes/common.adoc[]
 [Pre-requisites]
 ====
 1. Run link:scripts/00-service-mesh-cluster-install.sh[00-service-mesh-cluster-install.sh] to start the install process for service mesh on the cluster
+----
+$DEMO_HOME/scripts/00-service-mesh-cluster-install.sh
+----
 * run the following command until you see the corresponding output before you move on to step 2
 ----
 $ watch 'oc get csv -n istio-system -ocustom-columns-file=$DEMO_HOME/istiofiles/install/csv-columns.txt'
@@ -15,8 +18,17 @@ kiali-operator.v1.0.7                       1.0.7                Succeeded
 servicemeshoperator.v1.0.2                  1.0.2                Succeeded
 ----
 2. Run link:scripts/01-provision-service-mesh.sh[01-provision-service-mesh.sh] to start up the service mesh control plane (once fully installed)
+----
+$DEMO_HOME/scripts/01-provision-service-mesh.sh
+----
 3. Run link:scripts/02-project-no-service-mesh-setup.sh[02-project-no-service-mesh-setup.sh] to create the project with the toy app
+----
+$DEMO_HOME/scripts/02-project-no-service-mesh-setup.sh
+----
 3. Run link:scripts/03-project-apply-service-mesh.sh[03-project-apply-service-mesh.sh] to add the toy app to the service mesh
+----
+$DEMO_HOME/scripts/03-project-apply-service-mesh.sh
+----
 
 Make sure the toy app has sidecars installed
 ====
@@ -89,12 +101,14 @@ This should break into the debugger (if you set a breakpoint)
 .Important Prerequisites
 ====
 Make sure you have setup up to step three in the *pre-requisites* before you attempt to add this deployment
+
+DON'T FORGET TO LOGIN TO OPENSHIFT
 ====
 
 From the vscode shell, run the following command to create a new build and start one
 
 ----
-oc new-build --name recommendation-v3 java --binary -l app=recommendation,version=v3
+oc new-build --name recommendation-v3 java:8 --binary -l app=recommendation,version=v3
 oc start-build recommendation-v3 --from-file target/*.jar --follow
 ----
 
