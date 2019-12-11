@@ -316,7 +316,7 @@ image:images/denier.png[]
 $ oc apply -f $DEMO_HOME/istiofiles/acl-deny-except-customer2preference2recommendation.yml 
 ----
 
-1. Errors should start to mount.  Find these in Jaeger by searching for *customer*
+1. Errors should start to mount.  Find these in Jaeger by searching for *istio-mixer*
 
 image:images/jaeger-denier.png[]
 
