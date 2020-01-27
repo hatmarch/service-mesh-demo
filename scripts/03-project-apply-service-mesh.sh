@@ -37,7 +37,7 @@ oc apply -f $SCRIPT_DIR/service-mesh-roll.yaml -n istio-system
 oc delete NetworkPolicy istio-mesh -n $NAMESPACE
 
 # give the enrollment in the service mesh a chance to propagate
-sleep 1
+sleep 5
 
 # stop the pods and make them start up again to get sidecars
 $SCRIPT_DIR/project-bounce-pods.sh $NAMESPACE
