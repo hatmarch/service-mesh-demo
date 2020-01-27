@@ -1,6 +1,8 @@
-# FROM registry.redhat.io/codeready-workspaces/stacks-java-rhel8
-FROM quay.io/openshiftlabs/cloudnative-workspaces-quarkus:1.3
+FROM quay.io/mhildenb/cloudnative-workspaces-quarkus:1.0
 
+# NOTE: If you need to run yum to install anything, you'll need to register the RHEL container using docker BUILDKIT to pass secrets
+# If this is not supported by VSCode Remote, then you'll need to create a new base image outside of vscode / .devcontainer and make that image
+# the base container to this one
 USER root
 
 # install stern
