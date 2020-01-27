@@ -2,9 +2,12 @@
 
 include:includes/common.adoc[]
 
-Pre-requisites
+[Pre-requisites]
 ====
 1. Run link:scripts/00-service-mesh-cluster-install.sh[00-service-mesh-cluster-install.sh] to start the install process for service mesh on the cluster
+----
+$DEMO_HOME/scripts/00-service-mesh-cluster-install.sh
+----
 * run the following command until you see the corresponding output before you move on to step 2
 ----
 $ watch 'oc get csv -n istio-system -ocustom-columns-file=$DEMO_HOME/istiofiles/install/csv-columns.txt'
@@ -15,8 +18,17 @@ kiali-operator.v1.0.7                       1.0.7                Succeeded
 servicemeshoperator.v1.0.2                  1.0.2                Succeeded
 ----
 2. Run link:scripts/01-provision-service-mesh.sh[01-provision-service-mesh.sh] to start up the service mesh control plane (once fully installed)
+----
+$DEMO_HOME/scripts/01-provision-service-mesh.sh
+----
 3. Run link:scripts/02-project-no-service-mesh-setup.sh[02-project-no-service-mesh-setup.sh] to create the project with the toy app
+----
+$DEMO_HOME/scripts/02-project-no-service-mesh-setup.sh
+----
 3. Run link:scripts/03-project-apply-service-mesh.sh[03-project-apply-service-mesh.sh] to add the toy app to the service mesh
+----
+$DEMO_HOME/scripts/03-project-apply-service-mesh.sh
+----
 
 Make sure the toy app has sidecars installed
 ====
@@ -34,6 +46,93 @@ code .
 ** If you don't have Jaeger and Kiali open then you haven't accepted the cert and it can cause other parts of the demo to fail
 4. VSCode with the Java Project
 ====
+
+== Run a build locally
+
+Let's create a springboot application in a container
+
+----
+$ cd $DEMO_HOME/recommendation/java/springboot
+code .
+----
+
+At the prompt, select "Reopen in container".  Show the Dockerfile in the .devcontainer directory and point out that nothing is installed locally
+
+Within a bash shell in the container, run the following commands
+----
+export DEMO_HOME=$(pwd)
+mvn clean install -DskipTests
+----
+
+When the build has completed, then we want to update the recommendation to return a special message that we'll come back to later.  Use Cmd+P to quickly open the *RecommendationController.java* file.  You want to edit the following line.
+
+image:images/Recommendation-v3-change.png[]
+
+You may want that message to come from the audience.
+
+Once the edit is complete, rebuild and run locally with the command
+
+----
+java -Xdebug -Xrunjdwp:transport=dt_socket,address=5000,server=y,suspend=n -jar target/recommendation.jar
+----
+
+Or better, you can debug with the launch.conf.  If not already available, you can try
+----
+cp templates/vscode/* .vscode/
+cp: overwrite ‘.vscode/launch.json’? y
+cp: overwrite ‘.vscode/settings.json’? y
+----
+
+Then you should be able to debug the application by going to the debug tab and pressing the green triangle next as in the picture
+
+image:images/debug-locally.png[]
+
+With Shift+Cmd+P open the command palette and run Forward Ports in container, pick the proper port
+
+image:images/local-port-forward.png[]
+
+Then open with localhost to the forwarded container.
+
+This should break into the debugger (if you set a breakpoint)
+
+== Remote Building to Kubernetes
+
+[NOTE]
+.Important Prerequisites
+====
+Make sure you have setup up to step three in the *pre-requisites* before you attempt to add this deployment
+
+[red]#DON'T FORGET TO LOGIN TO OPENSHIFT#
+====
+
+From the vscode shell, run the following command to create a new build and start one
+
+----
+oc new-build --name recommendation-v3 java:8 --binary -l app=recommendation,version=v3
+oc start-build recommendation-v3 --from-file target/*.jar --follow
+----
+
+Explain that this is building within the java container and installing our binary (that we made locally) within it.  Explain that there is S2I built into OpenShift to allow integration with a git container.
+
+Once the build is complete, create a new app for our binary including labels that should be applied (this is important for routing to this pod later on in the walkthrough)
+
+NOTE: The recommendation-v3 deployment config appears to require explicit annotation to get istio sidecars installed.  It's unclear why this is necessary given the the project is part of the Istio SMMR which should cause the system to automatically do the sidecar injection
+
+----
+oc new-app recommendation-v3 -l app=recommendation,version=v3 -e JAVA_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,address=5000,server=y,suspend=n"
+# Update the template of the deployment config to ensure that recommendation-v3 pods get a sidecar injected
+oc patch dc/recommendation-v3 --patch '{"spec":{"template":{"metadata":{"annotations": { "sidecar.istio.io/inject":"true" }}}}}'
+oc expose svc recommendation-v3
+----
+
+The JAVA_OPTS will ensure that the target pod will run with debugging
+
+Go to the openshift console and show our new recommendation running.  To get the route use:
+----
+$ oc get route recommendation-v3 --no-headers | awk '{ print $2 }'
+----
+
+image:images/recommendation-v3.png[]
 
 == Runtime Complexity
 
@@ -217,7 +316,7 @@ image:images/denier.png[]
 $ oc apply -f $DEMO_HOME/istiofiles/acl-deny-except-customer2preference2recommendation.yml 
 ----
 
-1. Errors should start to mount.  Find these in Jaeger by searching for *customer*
+1. Errors should start to mount.  Find these in Jaeger by searching for *istio-mixer*
 
 image:images/jaeger-denier.png[]
 
@@ -242,8 +341,49 @@ NOTE: This is demonstrated best when all traffic is routed only to v1 of the cus
 $ oc apply -f $DEMO_HOME/istiofiles/virtual-service-recommendation-header.yml
 ----
 
-2. Ask the audience to navigate to this url: http://bit.ly/os-smt-url
+[blue]#OPTIONAL:# Now you can show the audience what has just been setup using istioctl
+----
+$ istioctl x describe pod $(oc get pods | grep -i recommendation-v3 | grep Running | awk '{print $1}')
+----
+
+Successful output will look like this (if output doesn't match, then look to <<Debugging with Istioctl,Troubleshooting>> section)
+----
+Pod: recommendation-v3-3-k5h42
+   Pod Ports: 8080 (recommendation-v3), 8443 (recommendation-v3), 8778 (recommendation-v3), 15090 (istio-proxy)
+--------------------
+Service: recommendation
+   Port: http 8080/HTTP targets pod port 8080
+DestinationRule: recommendation for "recommendation"
+   Matching subsets: version-v3
+      (Non-matching subsets version-v1,version-v2)
+   No Traffic Policy
+Pod is PERMISSIVE (enforces HTTP/mTLS) and clients speak HTTP
+VirtualService: recommendation
+   when headers are baggage-user-agent=regex:".*iPhone OS.*"
+   1 additional destination(s) that will not reach this pod
+----
+
+2. Ask the audience to navigate to this url: http://bit.ly/os-smt-url2
 ** OR alternatively can use the QR Code
 
 image:images/test-web.png[]
 
+== Troubleshooting
+
+=== Debugging with Istioctl
+
+You can look up route information by using the following command (where _recommendation-v3-5-jsxm9_ is the podname to which you want determine routes).  This output shows that there are none
+----
+$ istioctl x describe pod recommendation-v3-5-jsxm9
+Pod: recommendation-v3-5-jsxm9
+   Pod Ports: 8443 (recommendation-v3), 8778 (recommendation-v3), 8080 (recommendation-v3), 15090 (istio-proxy)
+Suggestion: add 'version' label to pod for Istio telemetry.
+--------------------
+Service: recommendation-v3
+   Port: 8080-tcp 8080/UnsupportedProtocol targets pod port 8080
+   Port: 8443-tcp 8443/UnsupportedProtocol targets pod port 8443
+   Port: 8778-tcp 8778/UnsupportedProtocol targets pod port 8778
+8080 Pod is PERMISSIVE (enforces HTTP/mTLS) and clients speak HTTP
+8443 Pod is PERMISSIVE (enforces HTTP/mTLS) and clients speak HTTP
+8778 Pod is PERMISSIVE (enforces HTTP/mTLS) and clients speak HTTP
+----
