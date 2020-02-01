@@ -1,6 +1,11 @@
 {
-	"name": "Java Sample",
+	"name": "Service Mesh Demo",
 	"dockerFile": "Dockerfile",
+	"runArgs": [
+		"-v", "${env:HOME}/.aws:/home/jboss/.aws",
+		"-e", "AWS_PROFILE=redhat"
+		//"AWS_PROFILE=${env:AWS_PROFILE}"
+	],
 	"extensions": [
 		"vscjava.vscode-java-pack",
 		"redhat.vscode-xml",
