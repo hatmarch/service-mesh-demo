@@ -108,8 +108,8 @@ Make sure you have setup up to step three in the *pre-requisites* before you att
 From the vscode shell, run the following command to create a new build and start one
 
 ----
-oc new-build --name recommendation-v3 java:8 --binary -l app=recommendation,version=v3
-oc start-build recommendation-v3 --from-file target/*.jar --follow
+oc new-build --name recommendation-v3 java:8 --binary -l app=recommendation,version=v3 -n demo-app
+oc start-build recommendation-v3 --from-file target/*.jar --follow -n demo-app
 ----
 
 Explain that this is building within the java container and installing our binary (that we made locally) within it.  Explain that there is S2I built into OpenShift to allow integration with a git container.
