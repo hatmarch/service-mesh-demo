@@ -129,7 +129,7 @@ The JAVA_OPTS will ensure that the target pod will run with debugging
 
 Go to the openshift console and show our new recommendation running.  To get the route use:
 ----
-$ oc get route recommendation-v3 --no-headers | awk '{ print $2 }'
+$ oc get route recommendation-v3 -o jsonpath='{.spec.host}'
 ----
 
 image:images/recommendation-v3.png[]
