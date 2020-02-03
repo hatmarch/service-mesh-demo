@@ -19,30 +19,30 @@ include::includes/common.adoc[]
 Pre-reqs
 ----
 # Env setup
-cdd
-. 00-ato-shell-setup-istio-install.sh
+cds
+. 00-project-shell-setup-istio-install.sh
 
 # Prepare for this section by removing previous instance of 
 # demo project
-cdd
-./02-ato-service-mesh-prep.sh
+cds
+./02-project-service-mesh-prep.sh
 ----
 
 == Create our (toy) project
 * Create the project that we'll be operating on for this demo
 
 ----
-cdd
-./02-ato-no-service-mesh-setup.sh
+cds
+./02-project-no-service-mesh-setup.sh
 ----
 
 * _Shell:_ Start load generation and see services come up
 
 ----
-cdd
-./ato-load-gen.sh customer
+cds
+./project-load-gen.sh customer
 
-Starting load gen for customer-tutorial.apps.ato-demo-replica.openshifttc.com.  Proceed? (y/N) y
+Starting load gen for customer-tutorial.apps.project-demo-replica.openshifttc.com.  Proceed? (y/N) y
 ----
 
 * _Kiali_: Once load starts building, open link:https://kiali-istio-system.apps.ato-demo-replica.openshifttc.com/console/graph/namespaces/?edges=requestsPerSecond&graphType=versionedApp&unusedNodes=false&injectServiceNodes=true&duration=60&pi=10000&namespaces=tutorial&layout=dagre[Kiali]
@@ -57,12 +57,12 @@ Starting load gen for customer-tutorial.apps.ato-demo-replica.openshifttc.com.  
 ** But once registered, the system will do a bunch of stuff for us automatically
 
 ----
-cdd
+cds
 cat service-mesh-roll.yaml
-./ato-restart-service-mesh.sh tutorial --no-kill
+./project-restart-service-mesh.sh tutorial --no-kill
 ----
 
-* _Kiali_: Open link:https://kiali-istio-system.apps.ato-demo-replica.openshifttc.com/console/graph/namespaces/?edges=requestsPerSecond&graphType=versionedApp&unusedNodes=false&injectServiceNodes=true&duration=60&pi=10000&namespaces=tutorial&layout=dagre[Kiali] 
+* _Kiali_: Open link:https://kiali-istio-system.apps.project-demo-replica.openshifttc.com/console/graph/namespaces/?edges=requestsPerSecond&graphType=versionedApp&unusedNodes=false&injectServiceNodes=true&duration=60&pi=10000&namespaces=tutorial&layout=dagre[Kiali] 
 ** Notice that the project can now be selected
 *** You may need to select "Show Empty Nodes"
 ** Notice the lack of sidecars
@@ -72,8 +72,8 @@ image::images/Kiali_NoSidecar.png[]
 * Now that we're registered for the service mesh, we need to restart our pods to give Service Mesh a chance to inject the _sidecars_ into them
 ** Show this by issuing the following and pointing out the 2/2 now
 ----
-cdd
-./ato-bounce-pods.sh tutorial
+cds
+./project-bounce-pods.sh tutorial
 oc get pods -w
 ----
 
@@ -81,7 +81,7 @@ oc get pods -w
 ** NOTE: if using springboot, the preference container will take a while to start up
 
 == Review changes in Kiali
-* _Kiali_: Open link:https://kiali-istio-system.apps.ato-demo-replica.openshifttc.com/console/graph/namespaces/?edges=requestsPerSecond&graphType=versionedApp&unusedNodes=false&injectServiceNodes=true&duration=60&pi=10000&namespaces=tutorial&layout=dagre[Kiali] again
+* _Kiali_: Open link:https://kiali-istio-system.apps.project-demo-replica.openshifttc.com/console/graph/namespaces/?edges=requestsPerSecond&graphType=versionedApp&unusedNodes=false&injectServiceNodes=true&duration=60&pi=10000&namespaces=tutorial&layout=dagre[Kiali] again
 ** point out that the sidecars can now be seen
 ** notice the flow
 

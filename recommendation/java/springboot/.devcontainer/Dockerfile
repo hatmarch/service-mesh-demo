@@ -14,7 +14,8 @@ USER root
 RUN yum -y install bash && \
   #yum -y install kubernetes-client-1.5.2-0.7.git269f928.el7.x86_64 && \
   yum -y install wget && \
-  yum -y install maven
+  yum -y install maven && \
+  yum -y install zsh
 
 RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl && \
   chmod +x ./kubectl && mv ./kubectl /usr/bin/kubectl
@@ -30,7 +31,7 @@ RUN cd /usr/local/bin && \
     curl -LO https://github.com/wercker/stern/releases/download/1.6.0/stern_linux_amd64 && \
     mv stern_linux_amd64 stern && chmod 755 stern && \
 # instal knative client
-    curl -L https://mirror.openshift.com/pub/openshift-v4/clients/serverless/latest/kn-linux-amd64-0.9.0.tar.gz | tar zxvf - -C /usr/local/bin && \
+    curl -L https://mirror.openshift.com/pub/openshift-v4/clients/serverless/latest/kn-linux-amd64-0.10.0.tar.gz | tar zxvf - -C /usr/local/bin && \
 # instal hey
     curl -LO https://storage.googleapis.com/hey-release/hey_linux_amd64 && \
     mv hey_linux_amd64 hey && chmod 755 hey
@@ -58,5 +59,8 @@ RUN mkdir -p /root/.vscode-server/data/Machine && echo '{ \
     } \
 }' > /root/.vscode-server/data/Machine/settings.json
 
-CMD /bin/bash
+# Install oh-my-zsh theme
+RUN yum install -y git && sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+
+CMD /bin/zsh
 

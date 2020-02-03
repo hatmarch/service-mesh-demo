@@ -15,7 +15,10 @@ fi
 oc delete project $NAMESPACE
 
 # unenroll from service mesh
-oc delete ServiceMeshMemberRoll --all -n istio-system
+# oc patch ServiceMeshMemberRoll/default -n istio-system --type=merge -p '{"spec": {"members": []}}' 
+
+# NOTE: deleting no longer appears to work, the call just hangs
+# oc delete ServiceMeshMemberRoll --all -n istio-system
 
 # pre-reqs
 oc adm policy add-scc-to-group anyuid system:authenticated
