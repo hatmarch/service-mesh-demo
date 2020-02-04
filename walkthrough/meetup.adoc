@@ -213,6 +213,11 @@ image:images/jaeger-dark-release.png[]
 
 Let's connect to the remote service using VSCode to try to figure out what's going on
 
+[WARNING]
+====
+[red]#If your connection is slow, the remote debugger might take a long time to connect and step through the code#
+====
+
 1. Open VSCode for the recommendation sub-project by going here:
 ----
 $ cd $DEMO_HOME/recommendation/java/quarkus/
