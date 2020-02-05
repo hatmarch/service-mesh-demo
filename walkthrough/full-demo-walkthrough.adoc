@@ -239,6 +239,23 @@ image::images/vscode_initialopen.png[]
 * Open the RecommendationResource.java and set breakpoint to: 
 ** public Response getRecommendations()
 
+[OPTIONAL]
+====
+You might want to stop the load test in the background and send request by request to show that we're really picking up on the mirrored request.
+
+1. Stop the loadgen
+2. Get the istio route by running the loadgen command, but indicating that the call should be made once
+----
+$ $DEMO_HOME/scripts/project-load-gen.sh customer istio
+Continuous load gen for istio-ingressgateway-istio-system.apps.cluster-bne-d92d.bne-d92d.example.opentlc.com/customer?  Press Y to proceed and N for single call (y/N) n
+
+Calling endpoint once
+customer => preference => recommendation v1 from '69d8cd757c-rqkj6': 1833
+----
+
+4. Open Jaeger and show the error in the last few moments (that represents our request)
+====
+
 * Open Kubernetes extension
 ** Select cluster
 ** Select namespaces (ensure *demo-app* is selected)
@@ -252,15 +269,70 @@ image::images/Kubernetes-Extension.png[]
 ** Select the recommendation container (and not the side car)
 
 ==== Hitting the breakpoint and fixing
+
+Assuming loadgen has been stopped, make a single call to the endpoint
+----
+$ $DEMO_HOME/scripts/project-load-gen.sh customer istio
+Continuous load gen for istio-ingressgateway-istio-system.apps.cluster-bne-d92d.bne-d92d.example.opentlc.com/customer?  Press Y to proceed and N for single call (y/N)
+
+Calling endpoint once
+customer => preference => recommendation v1 from '69d8cd757c-rqkj6': 1833
+----
+
 * Wait until breakpoint is hit
 ** show count in watch window
 ** Might be a little bit slow
+
+[INFO]
+.Signs that the debugger is attaching
+====
+If the debugger connection is slow, you can show that the connection has been made by going to the debug panel and looking at the threads
+image:images/debugger-attach-sign.png[]
+====
 
 * Walk through where the error is
 ** search for where 'misbehave' is set
 ** Notice it's from an ENVIRONMENT Variable
 
-* Change the default from "true" to "false"
+===== Option 1: Hot Swap Code to test
+* Allow the debugger to continue execution
+
+* Change the default from "true" to "false" and save the file
+
+* Click the hotswap button, notice that the class begins transmit
+
+image::images/hot-swap.png[]
+
+* [red]#Set a breakpoint at the end of the function to prove that this return can now get hit#
+
+* Submit another request to the endpoint after the upload of the class is done.
+
+----
+$ $DEMO_HOME/scripts/project-load-gen.sh customer istio
+----
+
+* Show that the end return endpoint is now being hit
+
+* Open Kiali and show that most recent call doesn't show the endpoint getting hit.
+
+* Next, show that this change was ephemeral by stopping the debugger and deleting the pod
+
+image::images/delete-now.png[]
+
+* Resubmit a request
+
+----
+$ $DEMO_HOME/scripts/project-load-gen.sh customer istio
+----
+
+* Show that the error re-appears in Kiali
+
+===== Option 2: Fix, recompile, and upload
+
+[WARNING]
+====
+This section is unfinished.
+====
 
 * Recompile the sources (*in VSCode bash*)
 ----
@@ -283,7 +355,21 @@ image::images/Misbehave_False.png[]
 
 ** Add the new "MISBEHAVE" environment variable and set to *false*
 ** Hit save.  
+
+[NOTE]
+.Setting the environment variable in the deployment instead
+====
+----
+oc set env deployment/recommendation-v2 MISBEHAVE="false"
+----
+====
+
 ** _Notice that pod is destroyed and recreated_
+
+* Restart loadgen if necessary
+----
+ $ scripts/project-load-gen.sh customer istio                                                        Continuous load gen for istio-ingressgateway-istio-system.apps.cluster-bne-d92d.bne-d92d.example.opentlc.com/customer?  Press Y to proceed and N for single call (y/N)y
+----
 
 * Check link:https://jaeger-istio-system.apps.ato-demo-replica.openshifttc.com/search?end=1570535773031000&limit=20&lookback=1h&maxDuration&minDuration&service=preference&start=1570532173031000[Jaeger]
 ** Notice no errors
@@ -321,9 +407,26 @@ image:images/denier.png[]
 $ oc apply -f $DEMO_HOME/istiofiles/acl-deny-except-customer2preference2recommendation.yml 
 ----
 
-1. Errors should start to mount.  Find these in Jaeger by searching for *istio-mixer*
+1. Errors should start to mount.  [red]#NOTE: It can take 30 seconds or more for policy to propagate through the mesh#
+
+1. Once errors start appearing in the load test, you can look deeper in Jaeger by searching for *istio-mixer*
 
 image:images/jaeger-denier.png[]
+
+[OPTIONAL]
+.Remove the restriction
+====
+You can remove the acl easily by deleting the istiofiles like so
+----
+$ oc delete -f istiofiles/acl-deny-except-customer2preference2recommendation.yml
+denier.config.istio.io "do-not-pass-go" deleted
+checknothing.config.istio.io "just-stop" deleted
+rule.config.istio.io "no-customer-to-recommendation" deleted
+rule.config.istio.io "no-preference-to-customer" deleted
+rule.config.istio.io "no-recommendation-to-customer" deleted
+rule.config.istio.io "no-recommendation-to-preference" deleted
+----
+====
 
 2. Get rid of the offending customer service
 ** In VSCode use CMD+p to start searching for _virtual-service-customer-v1_only.yml_
@@ -368,7 +471,7 @@ VirtualService: recommendation
    1 additional destination(s) that will not reach this pod
 ----
 
-2. Ask the audience to navigate to this url: http://bit.ly/os-smt-url2
+2. Ask the audience to navigate to this url: http://bit.ly/petalks
 ** OR alternatively can use the QR Code
 
 image:images/test-web.png[]

@@ -8,19 +8,6 @@ spec:
   gateways:
   - customer-gateway
   http:
-  # - match:
-  #   - scheme:
-  #     prefix: https
-  #   - port: 10443
-  #   - uri:
-  #       prefix: /customer
-  #   rewrite:
-  #     uri: /
-  #   route:
-  #   - destination:
-  #       host: customer
-  #       subset: version-v2
-  #     weight: 100
   - match:
     - uri:
         prefix: /customer

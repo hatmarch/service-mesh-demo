@@ -15,12 +15,14 @@ else
     URL="$(oc -n $PROJECT get route $ROUTE -o jsonpath='{.spec.host}')"
 fi
 
-read -n 1 -p "Starting load gen for $URL.  Proceed? (y/N)" COMPLETE
+read -n 1 -p "Continuous load gen for $URL?  Press Y to proceed and N for single call (y/N)" COMPLETE
 if [ "$COMPLETE" != "y" ]; then 
-    printf "\nLoadgen cancelled...\n"
-    exit 1
+    printf "\nCalling endpoint once\n"
+    curl $URL
+    exit 0
 fi
 
+# otherwise, continue the loadgen
 while true; do
     curl $URL
     sleep .1
