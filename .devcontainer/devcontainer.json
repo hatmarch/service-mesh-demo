@@ -6,12 +6,14 @@
 		"-e", "AWS_PROFILE=redhat"
 		//"AWS_PROFILE=${env:AWS_PROFILE}"
 	],
+	
 	"extensions": [
 		"vscjava.vscode-java-pack",
 		"redhat.vscode-xml",
 		"joaompinto.asciidoctor-vscode"
 	],
 	"settings":{
-		"java.home": "/usr/lib/jvm/java-1.8.0-openjdk"
+		"java.home": "/usr/lib/jvm/java-1.8.0-openjdk",
+		"terminal.integrated.shell.linux": "/usr/bin/zsh"
 	}
 }
