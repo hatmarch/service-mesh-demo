@@ -78,20 +78,20 @@ java -Xdebug -Xrunjdwp:transport=dt_socket,address=5000,server=y,suspend=n -jar 
 
 Or better, you can debug with the launch.conf.  If not already available, you can try
 ----
-cp templates/vscode/* .vscode/
-cp: overwrite ‘.vscode/launch.json’? y
-cp: overwrite ‘.vscode/settings.json’? y
+cp -f templates/vscode/* .vscode/
 ----
 
 Then you should be able to debug the application by going to the debug tab and pressing the green triangle next as in the picture
 
 image:images/debug-locally.png[]
 
-With Shift+Cmd+P open the command palette and run Forward Ports in container, pick the proper port
+Open the Remote extension sidebar and scroll to the bottom to see the forwarded ports display.  Click the **+** next to the 8080 port.
 
-image:images/local-port-forward.png[]
+image:images/port-forward.png[]
 
-Then open with localhost to the forwarded container.
+Then open with localhost to the forwarded container by either going to localhost:8080 in a browser or clicking the little world icon next to the port
+
+image:images/world-icon.png[]
 
 This should break into the debugger (if you set a breakpoint)
 
