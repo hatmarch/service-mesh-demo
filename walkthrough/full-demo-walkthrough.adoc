@@ -173,6 +173,16 @@ Customer customer-v2-66bd8ffc8d-w9sfr => unknown
 ----
 
 3. Open link:https://kiali-istio-system.apps.service-mesh-demo.openshifttc.com/console/graph/namespaces/?edges=noEdgeLabels&graphType=versionedApp&namespaces=demo-app&unusedNodes=true&injectServiceNodes=true&duration=60&pi=10000&layout=dagre[Kiali], and make sure to open the project as seen here
+
+[NOTE]
+.Get Kiali Host
+====
+You can get the kiali host by issuing this command
+----
+echo "https://$(oc get route kiali -o=jsonpath='{.spec.host}' -n istio-system)/"
+----
+====
+
 image:images/kiali-initial-open.png[]
 
 4. Open link:https://jaeger-istio-system.apps.service-mesh-demo.openshifttc.com/search?end=1574598630733000&limit=20&lookback=1h&maxDuration&minDuration&service=recommendation&start=1574595030733000[Jaeger Trace] to inspect some of the items with failures.  Put *"recommendation"* in the search box to get traces that end with it
