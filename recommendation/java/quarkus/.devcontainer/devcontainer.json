@@ -5,6 +5,9 @@
 	"runArgs": [ "-v", "/Users/marc.hildenbrand/.kube:/root/.kube", 
 		"--env", "MISBEHAVE=false"],
 	"appPort": "8080",
+	"settings":{
+		"terminal.integrated.shell.linux": "/bin/bash"
+	},
 	 "extensions": [
 	 	"vscjava.vscode-java-pack",
 		 "redhat.vscode-xml",
