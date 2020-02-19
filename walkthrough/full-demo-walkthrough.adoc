@@ -185,7 +185,19 @@ echo "https://$(oc get route kiali -o=jsonpath='{.spec.host}' -n istio-system)/"
 
 image:images/kiali-initial-open.png[]
 
-4. Open link:https://jaeger-istio-system.apps.service-mesh-demo.openshifttc.com/search?end=1574598630733000&limit=20&lookback=1h&maxDuration&minDuration&service=recommendation&start=1574595030733000[Jaeger Trace] to inspect some of the items with failures.  Put *"recommendation"* in the search box to get traces that end with it
+4. Open link:https://jaeger-istio-system.apps.service-mesh-demo.openshifttc.com/search?end=1574598630733000&limit=20&lookback=1h&maxDuration&minDuration&service=recommendation&start=1574595030733000[Jaeger Trace] to inspect some of the items with failures.  
+
+[NOTE]
+.Get Jaeger Host
+====
+You can get the jaeger host by issuing this command
+----
+echo "https://$(oc get route jaeger -o=jsonpath='{.spec.host}' -n istio-system)/"
+----
+====
+
+
+Put *"recommendation"* in the search box to get traces that end with it
 * NOTE: it is possible to do this through Kiali as well, using the "Distributed Tracing" tab
 image:images/jaeger-trace.png[]
 
