@@ -415,6 +415,24 @@ virtualservice.networking.istio.io/recommendation configured
 
 image:images/kiali-recommendation-75-25.png[]
 
+[NOTE]
+.Immediate Proof
+====
+If you have istioctl installed, you can use the x des (experimental describe) functionality to show the current state of the recommendation service after applying the yaml file:
+----
+$ istioctl x des service recommendation
+Service: recommendation
+   Port: http 8080/HTTP targets pod port 8080
+DestinationRule: recommendation for "recommendation"
+   Matching subsets: version-v1,version-v2
+   No Traffic Policy
+Pod is PERMISSIVE (enforces HTTP/mTLS) and clients speak HTTP
+VirtualService: recommendation
+   Weight 75%
+   Weight 25%
+----
+====
+
 == Security
 
 Let's pretend that we discover that the customer service should never be calling the recommendation service directly.  We can enforce this by setting up access rules that ensure a given path through the system
