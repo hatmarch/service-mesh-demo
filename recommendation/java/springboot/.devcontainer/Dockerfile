@@ -37,27 +37,27 @@ RUN cd /usr/local/bin && \
     mv hey_linux_amd64 hey && chmod 755 hey
 
 
-# Configuration for the Kubernetes plugin
-RUN mkdir -p /root/.vscode-server/data/Machine && echo '{ \
-    "vs-kubernetes": { \
-        "vs-kubernetes.namespace": "", \
-        "vs-kubernetes.kubectl-path": "/usr/bin/kubectl", \
-        "vs-kubernetes.helm-path": "", \
-        "vs-kubernetes.draft-path": "", \
-        "vs-kubernetes.minikube-path": "", \
-        "vs-kubernetes.kubectlVersioning": "user-provided", \
-        "vs-kubernetes.outputFormat": "yaml", \
-        "vs-kubernetes.kubeconfig": "", \
-        "vs-kubernetes.knownKubeconfigs": [], \
-        "vs-kubernetes.autoCleanupOnDebugTerminate": false, \
-        "vs-kubernetes.nodejs-autodetect-remote-root": true, \
-        "vs-kubernetes.nodejs-remote-root": "", \
-        "vs-kubernetes.nodejs-debug-port": 9229, \
-        "checkForMinikubeUpgrade": true, \
-        "logsDisplay": "webview", \
-        "imageBuildTool": "Docker" \
-    } \
-}' > /root/.vscode-server/data/Machine/settings.json
+# # Configuration for the Kubernetes plugin
+# RUN mkdir -p /root/.vscode-server/data/Machine && echo '{ \
+#     "vs-kubernetes": { \
+#         "vs-kubernetes.namespace": "", \
+#         "vs-kubernetes.kubectl-path": "/usr/bin/kubectl", \
+#         "vs-kubernetes.helm-path": "", \
+#         "vs-kubernetes.draft-path": "", \
+#         "vs-kubernetes.minikube-path": "", \
+#         "vs-kubernetes.kubectlVersioning": "user-provided", \
+#         "vs-kubernetes.outputFormat": "yaml", \
+#         "vs-kubernetes.kubeconfig": "", \
+#         "vs-kubernetes.knownKubeconfigs": [], \
+#         "vs-kubernetes.autoCleanupOnDebugTerminate": false, \
+#         "vs-kubernetes.nodejs-autodetect-remote-root": true, \
+#         "vs-kubernetes.nodejs-remote-root": "", \
+#         "vs-kubernetes.nodejs-debug-port": 9229, \
+#         "checkForMinikubeUpgrade": true, \
+#         "logsDisplay": "webview", \
+#         "imageBuildTool": "Docker" \
+#     } \
+# }' > /root/.vscode-server/data/Machine/settings.json
 
 # Install oh-my-zsh theme
 RUN yum install -y git && sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"

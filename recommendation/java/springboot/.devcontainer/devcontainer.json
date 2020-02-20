@@ -4,6 +4,27 @@
 	// Update this with the mount point of your config file for kubernetes so that you can have that info in the container
 	"runArgs": [ "-v", "/Users/marc.hildenbrand/.kube:/root/.kube"],
 	"appPort": "8080",
+	"settings": {
+		"terminal.integrated.shell.linux": "/bin/zsh",
+		"vs-kubernetes": { 
+			"vs-kubernetes.namespace": "", 
+			"vs-kubernetes.kubectl-path": "/usr/bin/kubectl", 
+			"vs-kubernetes.helm-path": "", 
+			"vs-kubernetes.draft-path": "", 
+			"vs-kubernetes.minikube-path": "", 
+			"vs-kubernetes.kubectlVersioning": "user-provided", 
+			"vs-kubernetes.outputFormat": "yaml", 
+			"vs-kubernetes.kubeconfig": "", 
+			"vs-kubernetes.knownKubeconfigs": [], 
+			"vs-kubernetes.autoCleanupOnDebugTerminate": false, 
+			"vs-kubernetes.nodejs-autodetect-remote-root": true, 
+			"vs-kubernetes.nodejs-remote-root": "", 
+			"vs-kubernetes.nodejs-debug-port": 9229, 
+			"checkForMinikubeUpgrade": true, 
+			"logsDisplay": "webview", 
+			"imageBuildTool": "Docker" 
+		} 
+	},
 	 "extensions": [
 	 	"vscjava.vscode-java-pack",
 		 "redhat.vscode-xml",
