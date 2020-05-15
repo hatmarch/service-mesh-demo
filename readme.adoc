@@ -42,7 +42,7 @@ Follow these steps to be able to run link:walkthrough/full-demo-walkthrough.adoc
 . First ensure your shell environment is setup correctly
 +
 ----
-source shell-setup.sh
+source scripts/shell-setup.sh
 ----
 +
 . Next, run link:scripts/00-service-mesh-cluster-install.sh[00-service-mesh-cluster-install.sh] to start the install process for service mesh on the cluster

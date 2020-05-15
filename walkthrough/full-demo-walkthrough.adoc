@@ -8,7 +8,7 @@ include:includes/common.adoc[]
 
 [Pre-requisites]
 ====
-Make sure to follow the setup instructions in the link:readme.adoc[readme.adoc]
+Make sure to follow the setup instructions in the link:../readme.adoc[readme.adoc]
 
 ====
 
