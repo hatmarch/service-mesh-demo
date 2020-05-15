@@ -37,7 +37,17 @@ code .
 
 == Demo Setup
 
-Follow these steps to be able to run link:walkthrough/full-demo-walkthrough.adoc[this walkthrough]:
+Follow the following steps to be able to run link:walkthrough/full-demo-walkthrough.adoc[this walkthrough].  These instructions were tested with OpenShift 4.4 and follow the instructions that can be found link:https://docs.openshift.com/container-platform/4.4/service_mesh/service_mesh_install/installing-ossm.html[here]
+
+[NOTE]
+====
+If you're really in a hurry, you can run all these commands at once using the following (allow about 5 minutes for the whole thing to complete)
+
+----
+source scripts/shell-setup.sh
+$DEMO_HOME/scripts/setup-full-demo.sh
+----
+====
 
 . First ensure your shell environment is setup correctly
 +
@@ -81,4 +91,22 @@ recommendation-v1-6bbfdf4dfd-9jq69   2/2     Running   0          2m31s
 recommendation-v2-754b5cf657-ljtkz   2/2     Running   0          2m31s
 ----
 
+== Appendix
 
+=== Helpful `istioctl` commands
+
+For general information about istioctl (1.4), see the "Istioldie" documentation link:https://archive.istio.io/v1.4/docs/reference/commands/istioctl/[here]
+
+==== Inspecting a service
+
+You can use the experimental `describe` command to find out more about services in the cluster.  NOTE that you need to specify what the name of the istio system is using the `-i` (istio-system) flag that names the project where the control plane lives.  Assuming you are currently in the project whose control plane you want to describe you could find out about the customer service using this example:
+
+----
+$ istioctl -i $(oc project -q)-istio-system x des service customer 
+Service: customer
+   Port: http 8080/HTTP targets pod port 8080
+DestinationRule: customer for "customer"
+   Matching subsets: version-v1,version-v2
+   No Traffic Policy
+Pod is PERMISSIVE, client protocol unspecified
+----
