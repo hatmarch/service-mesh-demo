@@ -51,17 +51,6 @@ source scripts/shell-setup.sh
 $DEMO_HOME/scripts/00-service-mesh-cluster-install.sh
 ----
 +
-* run the following command until you see the corresponding output before you move on to step 2
-+
-----
-$ watch 'oc get csv -n istio-system -ocustom-columns-file=$DEMO_HOME/istiofiles/install/csv-columns.txt'
-NAME                                         VERSION               PHASE
-elasticsearch-operator.4.2.5-201911121709   4.2.5-201911121709   Succeeded
-jaeger-operator.v1.13.1                     1.13.1               Succeeded
-kiali-operator.v1.0.7                       1.0.7                Succeeded
-servicemeshoperator.v1.0.2                  1.0.2                Succeeded
-----
-+
 . Run link:scripts/01-provision-service-mesh.sh[01-provision-service-mesh.sh] to start up the service mesh control plane (once fully installed)
 +
 ----
@@ -80,6 +69,16 @@ $DEMO_HOME/scripts/02-project-no-service-mesh-setup.sh
 $DEMO_HOME/scripts/03-project-apply-service-mesh.sh
 ----
 +
-. Finally, Make sure the toy app has sidecars installed
+. The previous command should only finish once all the containers are up and have their sidecars.  When you look at the pods running the project, it should look something like this:
++
+----
+$ oc get pods
+NAME                                 READY   STATUS    RESTARTS   AGE
+customer-6b4cb68cc5-8hdh8            2/2     Running   0          3m25s
+customer-v2-584b5c89ff-7lgsb         2/2     Running   0          3m25s
+preference-v1-7f4f5dc8dd-4zgj8       2/2     Running   0          2m46s
+recommendation-v1-6bbfdf4dfd-9jq69   2/2     Running   0          2m31s
+recommendation-v2-754b5cf657-ljtkz   2/2     Running   0          2m31s
+----
 
 
