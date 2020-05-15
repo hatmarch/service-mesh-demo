@@ -3,7 +3,7 @@
 set -e -u -o pipefail
 declare -r SCRIPT_DIR=$(cd -P $(dirname $0) && pwd)
 declare -r DEMO_HOME="$SCRIPT_DIR/.."
-declare -r PROJECT_NAME="demo-app"
+declare PROJECT_NAME="demo-app"
 
 while (( "$#" )); do
     case "$1" in
