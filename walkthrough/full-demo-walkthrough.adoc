@@ -91,16 +91,17 @@ oc new-build --name recommendation-v3 java:8 --binary -l app=recommendation,vers
 oc start-build recommendation-v3 --from-file target/*.jar --follow -n demo-app
 ----
 
-Explain that this is building within the java container and installing our binary (that we made locally) within it.  Explain that there is S2I built into OpenShift to allow integration with a git container.
+Explain that this is building within the java container and installing our binary (that we made locally) within it.  Explain that there is S2I built into OpenShift to allow integration with a git repo.
 
 Once the build is complete, create a new app for our binary including labels that should be applied (this is important for routing to this pod later on in the walkthrough)
 
-NOTE: The recommendation-v3 deployment config appears to require explicit annotation to get istio sidecars installed.  It's unclear why this is necessary given the the project is part of the Istio SMMR which should cause the system to automatically do the sidecar injection
-
+NOTE: As per the instructions link:https://docs.openshift.com/container-platform/4.4/service_mesh/service_mesh_day_two/prepare-to-deploy-applications-ossm.html#ossm-automatic-sidecar-injection_deploying-applications-ossm[here] you need to explicitly request that your application have sidecar injection applied to it.  We do this with an annotation.
 ----
 oc new-app recommendation-v3 -l app=recommendation,version=v3 -e JAVA_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,address=5000,server=y,suspend=n"
+
 # Update the template of the deployment config to ensure that recommendation-v3 pods get a sidecar injected
 oc patch dc/recommendation-v3 --patch '{"spec":{"template":{"metadata":{"annotations": { "sidecar.istio.io/inject":"true" }}}}}'
+
 oc expose svc recommendation-v3
 ----
 
@@ -119,8 +120,7 @@ Our toy app has some problems out of the gate.  Let's run calls to it in a windo
 
 1. In a shell window where you are logged into the OpenShift cluster, run the following
 ----
-$ cds
-$ ./project-load-gen.sh customer istio
+$DEMO_HOME/scripts/project-load-gen.sh customer --istio
 Starting load gen for istio-ingressgateway-istio-system.apps.service-mesh.openshifttc.com/customer.  Proceed? (y/N)
 ----
 
@@ -158,7 +158,7 @@ Customer customer-v2-66bd8ffc8d-w9sfr => unknown
 ====
 You can get the kiali host by issuing this command
 ----
-echo "https://$(oc get route kiali -o=jsonpath='{.spec.host}' -n istio-system)/"
+echo "https://$(oc get route kiali -o=jsonpath='{.spec.host}' -n demo-app-istio-system)/"
 ----
 ====
 
@@ -171,7 +171,7 @@ image:images/kiali-initial-open.png[]
 ====
 You can get the jaeger host by issuing this command
 ----
-echo "https://$(oc get route jaeger -o=jsonpath='{.spec.host}' -n istio-system)/"
+echo "https://$(oc get route jaeger -o=jsonpath='{.spec.host}' -n demo-app-istio-system)/"
 ----
 ====
 
