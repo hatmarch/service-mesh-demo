@@ -1,11 +1,19 @@
 {
-	"name": "Remote Debug Sample",
+	"name": "Spring Boot Debug Sample",
 	"dockerFile": "Dockerfile",
 	// Update this with the mount point of your config file for kubernetes so that you can have that info in the container
-	"runArgs": [ "-v", "/Users/marc.hildenbrand/.kube:/root/.kube"],
+	"runArgs": [ "-v", "/Users/marc.hildenbrand/.kube:/root/.kube",
+		"-v", "${env:HOME}/.vs-kubernetes:/home/jboss/.vs-kubernetes",
+
+		// use local .oh-my-zsh configuration if it exists (overwriting one in container).
+		// comment the following line out if you want to use local installation on container instead
+		"-v", "${env:HOME}/.oh-my-zsh:/home/jboss/.oh-my-zsh",
+		"-v", "${env:HOME}/.helm:/home/jboss/.helm",
+		"-v", "${env:HOME}/.ssh:/home/jboss/.ssh" ],
 	"appPort": "8080",
 	"settings": {
 		"terminal.integrated.shell.linux": "/bin/zsh",
+		"workbench.colorTheme": "Visual Studio Dark",
 		"vs-kubernetes": { 
 			"vs-kubernetes.namespace": "", 
 			"vs-kubernetes.kubectl-path": "/usr/bin/kubectl", 
