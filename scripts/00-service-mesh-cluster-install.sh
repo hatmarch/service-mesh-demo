@@ -34,12 +34,17 @@ oc apply -f "$DEMO_HOME/istiofiles/install/redhat-operators-csc.yaml"
 oc apply -f "$DEMO_HOME/istiofiles/install/subscription.yaml"
 
 # would love to replace this is an oc wait command, but the csv does not appear to have a status.condition that lends itself to this
-echo "Waiting for operator installation to complete..."
-while true; do
-    if [[ "$(oc get csv/servicemeshoperator.v1.1.1 -o jsonpath='{.status.phase}' 2>/dev/null)" == "Succeeded" ]]; then
-        break;
-    fi
+declare -r SUBS=( elastic-search jaeger kiali servicemesh )
+for SUB in "${SUBS[@]}"; do
+    declare CSV=$(oc get sub/$SUB -o jsonpath='{.status.currentCSV}' -n openshift-operators)
+    echo "Waiting for operator ${CSV} installation to complete..."
+    while true; do
+        if [[ "$(oc get csv/$CSV -n ${ISTIO_PRJ} -o jsonpath='{.status.phase}' 2>/dev/null)" == "Succeeded" ]]; then
+            break;
+        fi
 
-    sleep 5
+        sleep 5
+    done
 done
-echo "done."
+
+echo "All operators installed in project ${ISTIO_PRJ}"
