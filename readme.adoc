@@ -39,6 +39,8 @@ code .
 
 Follow the following steps to be able to run link:walkthrough/full-demo-walkthrough.adoc[this walkthrough].  These instructions were tested with OpenShift 4.4 and follow the instructions that can be found link:https://docs.openshift.com/container-platform/4.4/service_mesh/service_mesh_install/installing-ossm.html[here]
 
+image:walkthrough/images/istio-versions-ossm-1.1.1.1.png[]
+
 [NOTE]
 ====
 If you're really in a hurry, you can run all these commands at once using the following (allow about 5 minutes for the whole thing to complete)
