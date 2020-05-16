@@ -186,7 +186,7 @@ OPTIONAL:
 ====
 Show the link:https://kiali-istio-system.apps.service-mesh.openshifttc.com/console/istio?namespaces=demo-app[Istio Configuration from kiali] and reinforce the concepts of Gateways, VirtualServices, and Destination Rules.
 ====
-
+ 
 == Resilence
 
 === Dark Release
@@ -215,7 +215,7 @@ echo "https://$(oc get route kiali -o=jsonpath='{.spec.host}' -n demo-app-istio-
 . To see the actual mirrored calls, we need to look to link:https://jaeger-istio-system.apps.service-mesh.openshifttc.com/search?end=1573388314241000&limit=20&lookback=1h&maxDuration&minDuration&service=recommendation&start=1573384714241000[Jaeger] searching again for *recommendation*
 +
 ----
-echo "https://$(oc get route jaeger -o=jsonpath='{.spec.host}' -n demo-app-istio-system)/"
+istioctl d jaeger -i demo-app-istio-system
 ----
 +
 image:images/jaeger-dark-release.png[]
@@ -229,6 +229,7 @@ Let's connect to the remote service using VSCode to try to figure out what's goi
 [red]#If your connection is slow, the remote debugger might take a long time to connect and step through the code#
 ====
 
+. First, be sure to stop any loadgen
 . Open VSCode for the recommendation sub-project by going here:
 +
 ----
@@ -250,24 +251,6 @@ image::images/vscode_initialopen.png[]
 +
 . Open the RecommendationResource.java and set breakpoint to: 
 ** public Response getRecommendations()
-+
-[OPTIONAL]
-====
-You might want to stop the load test in the background and send request by request to show that we're really picking up on the mirrored request.
-
-. Stop the loadgen
-. Get the istio route by running the loadgen command, but indicating that the call should be made once
-+
-----
-$ $DEMO_HOME/scripts/project-load-gen.sh customer istio
-Continuous load gen for istio-ingressgateway-istio-system.apps.cluster-bne-d92d.bne-d92d.example.opentlc.com/customer?  Press Y to proceed and N for single call (y/N) n
-
-Calling endpoint once
-customer => preference => recommendation v1 from '69d8cd757c-rqkj6': 1833
-----
-+
-. Open Jaeger and show the error in the last few moments (that represents our request)
-====
 +
 . Open Kubernetes extension
 ** Select cluster
@@ -392,6 +375,10 @@ $DEMO_HOME/scripts/project-load-gen.sh customer --istio                         
 . Check Jaeger
 +
 ----
+# Allow istioctl to setup port forwarding for us and we connect on localhost
+istioctl d jaeger -i demo-app-istio-system
+
+# OR you can get it the oldfashioned way
 echo "https://$(oc get route jaeger -o=jsonpath='{.spec.host}' -n demo-app-istio-system)/"
 ----
 +
