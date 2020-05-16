@@ -4,6 +4,7 @@ metadata:
   labels:
     app: recommendation
     version: v2
+    app.kubernetes.io/part-of: Recommendation
   name: recommendation-v2
 spec:
   replicas: 1

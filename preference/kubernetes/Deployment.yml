@@ -4,6 +4,7 @@ metadata:
   labels:
     app: preference
     version: v1
+    app.kubernetes.io/part-of: Preference
   name: preference-v1
 spec:
   replicas: 1

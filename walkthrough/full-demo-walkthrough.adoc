@@ -84,34 +84,36 @@ Make sure you have setup up to step three in the *pre-requisites* before you att
 [red]#DON'T FORGET TO LOGIN TO OPENSHIFT#
 ====
 
-From the vscode shell, run the following command to create a new build and start one
-
+. From the vscode shell, run the following command to create a new build and start one
++
 ----
 oc new-build --name recommendation-v3 java:8 --binary -l app=recommendation,version=v3 -n demo-app
 oc start-build recommendation-v3 --from-file target/*.jar --follow -n demo-app
 ----
-
-Explain that this is building within the java container and installing our binary (that we made locally) within it.  Explain that there is S2I built into OpenShift to allow integration with a git repo.
-
-Once the build is complete, create a new app for our binary including labels that should be applied (this is important for routing to this pod later on in the walkthrough)
-
++
+** Explain that this is building within the java container and installing our binary (that we made locally) within it.  Explain that there is S2I built into OpenShift to allow integration with a git repo.
++
+. Once the build is complete, create a new app for our binary including labels that should be applied (this is important for routing to this pod later on in the walkthrough)
++
 NOTE: As per the instructions link:https://docs.openshift.com/container-platform/4.4/service_mesh/service_mesh_day_two/prepare-to-deploy-applications-ossm.html#ossm-automatic-sidecar-injection_deploying-applications-ossm[here] you need to explicitly request that your application have sidecar injection applied to it.  We do this with an annotation.
++
 ----
-oc new-app recommendation-v3 -l app=recommendation,version=v3 -e JAVA_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,address=5000,server=y,suspend=n"
+oc new-app recommendation-v3 -l app=recommendation,version=v3,app.kubernetes.io/part-of=Recommendation -e JAVA_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,address=5000,server=y,suspend=n"
 
 # Update the template of the deployment config to ensure that recommendation-v3 pods get a sidecar injected
 oc patch dc/recommendation-v3 --patch '{"spec":{"template":{"metadata":{"annotations": { "sidecar.istio.io/inject":"true" }}}}}'
 
 oc expose svc recommendation-v3
 ----
-
-The JAVA_OPTS will ensure that the target pod will run with debugging
-
-Go to the openshift console and show our new recommendation running.  To get the route use:
++
+**The JAVA_OPTS will ensure that the target pod will run with debugging
++
+. Go to the openshift console and show our new recommendation service running.  To get the route use:
++
 ----
-$ oc get route recommendation-v3 -o jsonpath='{.spec.host}'
+echo "http://$(oc get route recommendation-v3 -o jsonpath='{.spec.host}' -n demo-app)/" 
 ----
-
++
 image:images/recommendation-v3.png[]
 
 == Runtime Complexity
