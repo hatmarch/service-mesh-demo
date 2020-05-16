@@ -1,17 +1,20 @@
 apiVersion: "config.istio.io/v1alpha2"
-kind: denier
+kind: handler
 metadata:
   name: do-not-pass-go
 spec:
-  status:
-    code: 14
-    message: Customer -> Preference -> Recommendation ONLY
+  compiledAdapter: denier
+  params:
+    status:
+      code: 14
+      message: Customer -> Preference -> Recommendation ONLY
 ---
 apiVersion: "config.istio.io/v1alpha2"
-kind: checknothing
+kind: instance
 metadata:
   name: just-stop
 spec:
+  compiledTemplate: checknothing
 ---
 apiVersion: "config.istio.io/v1alpha2"
 kind: rule
@@ -20,8 +23,8 @@ metadata:
 spec:
   match: source.labels["app"]=="customer" && destination.labels["app"] == "recommendation" 
   actions:
-  - handler: do-not-pass-go.denier
-    instances: [ just-stop.checknothing ]
+  - handler: do-not-pass-go
+    instances: [ just-stop ]
 ---
 apiVersion: "config.istio.io/v1alpha2"
 kind: rule
@@ -30,8 +33,8 @@ metadata:
 spec:
   match: source.labels["app"]=="preference" && destination.labels["app"] == "customer" 
   actions:
-  - handler: do-not-pass-go.denier
-    instances: [ just-stop.checknothing ]
+  - handler: do-not-pass-go
+    instances: [ just-stop ]
 ---
 apiVersion: "config.istio.io/v1alpha2"
 kind: rule
@@ -40,8 +43,8 @@ metadata:
 spec:
   match: source.labels["app"]=="recommendation" && destination.labels["app"] == "customer"
   actions:
-  - handler: do-not-pass-go.denier
-    instances: [ just-stop.checknothing ]
+  - handler: do-not-pass-go
+    instances: [ just-stop ]
 ---
 apiVersion: "config.istio.io/v1alpha2"
 kind: rule
@@ -50,5 +53,5 @@ metadata:
 spec:
   match: source.labels["app"]=="recommendation" && destination.labels["app"] == "preference"
   actions:
-  - handler: do-not-pass-go.denier
-    instances: [ just-stop.checknothing ]
+  - handler: do-not-pass-go
+    instances: [ just-stop ]
