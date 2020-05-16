@@ -193,23 +193,31 @@ Show the link:https://kiali-istio-system.apps.service-mesh.openshifttc.com/conso
 
 The recommendation service v2 is failing.  Let's pull it out of production and instead mirror traffic that comes into it so that we might be able to figure out what's going on.
 
-1. Open the link:istiofiles/virtual-service-recommendation-v1-mirror-v2.yml[istiofiles/virtual-service-recommendation-v1-mirror-v2.yml] yaml in shell (or VSCode) for inspection:
-
+. From within VSCode, use kbd:[CMD+P] to quickly open the link:istiofiles/virtual-service-recommendation-v1-mirror-v2.yml[istiofiles/virtual-service-recommendation-v1-mirror-v2.yml] yaml for inspection:
++
 image:images/recommendation-dark-release.png[]
-
-2. Apply the changes
++
+. Apply the changes to the cluster
++
 ----
-$ cdh
-$ oc apply -f $DEMO_HOME/istiofiles/virtual-service-recommendation-v1-mirror-v2.yml
+oc apply -f $DEMO_HOME/istiofiles/virtual-service-recommendation-v1-mirror-v2.yml
 virtualservice.networking.istio.io/recommendation configured
 ----
-
-3. Go to the continous invocation shell and notice errors going to 0
-
-4. Open link:https://kiali-istio-system.apps.service-mesh.openshifttc.com/console/graph/namespaces/?edges=requestsPercentage&graphType=versionedApp&namespaces=demo-app&unusedNodes=true&injectServiceNodes=true&duration=60&pi=15000&layout=dagre[Kiali] and notice that error rate has gone to 0.
-
-5. To see the actual mirrored calls, we need to look to link:https://jaeger-istio-system.apps.service-mesh.openshifttc.com/search?end=1573388314241000&limit=20&lookback=1h&maxDuration&minDuration&service=recommendation&start=1573384714241000[Jaeger] searching again for *recommendation*
-
++
+. Go to the continous invocation shell and notice errors going to 0
++
+. Open link:https://kiali-istio-system.apps.service-mesh.openshifttc.com/console/graph/namespaces/?edges=requestsPercentage&graphType=versionedApp&namespaces=demo-app&unusedNodes=true&injectServiceNodes=true&duration=60&pi=15000&layout=dagre[Kiali] and notice that error rate has gone to 0.
++
+----
+echo "https://$(oc get route kiali -o=jsonpath='{.spec.host}' -n demo-app-istio-system)/"
+----
++
+. To see the actual mirrored calls, we need to look to link:https://jaeger-istio-system.apps.service-mesh.openshifttc.com/search?end=1573388314241000&limit=20&lookback=1h&maxDuration&minDuration&service=recommendation&start=1573384714241000[Jaeger] searching again for *recommendation*
++
+----
+echo "https://$(oc get route jaeger -o=jsonpath='{.spec.host}' -n demo-app-istio-system)/"
+----
++
 image:images/jaeger-dark-release.png[]
 
 === Remote Debugging
@@ -221,16 +229,17 @@ Let's connect to the remote service using VSCode to try to figure out what's goi
 [red]#If your connection is slow, the remote debugger might take a long time to connect and step through the code#
 ====
 
-1. Open VSCode for the recommendation sub-project by going here:
+. Open VSCode for the recommendation sub-project by going here:
++
 ----
-$ cd $DEMO_HOME/recommendation/java/quarkus/
-$ code .
+$DEMO_HOME/recommendation/java/quarkus/
+code .
 ----
-
-* Select *Open Folder in Container*
-
++
+.Select *Open Folder in Container*
++
 image::images/vscode_initialopen.png[]
-
++
 * Show the development container: *Dockerfile*
 ** point out maven
 ** sdk
@@ -238,16 +247,17 @@ image::images/vscode_initialopen.png[]
 ** show the kubernetes and java plugins
 ** show the args for the volume mount to get to user's home directory
 ** Spoiler: and the environment variable!
-
-* Open the RecommendationResource.java and set breakpoint to: 
++
+. Open the RecommendationResource.java and set breakpoint to: 
 ** public Response getRecommendations()
-
++
 [OPTIONAL]
 ====
 You might want to stop the load test in the background and send request by request to show that we're really picking up on the mirrored request.
 
-1. Stop the loadgen
-2. Get the istio route by running the loadgen command, but indicating that the call should be made once
+. Stop the loadgen
+. Get the istio route by running the loadgen command, but indicating that the call should be made once
++
 ----
 $ $DEMO_HOME/scripts/project-load-gen.sh customer istio
 Continuous load gen for istio-ingressgateway-istio-system.apps.cluster-bne-d92d.bne-d92d.example.opentlc.com/customer?  Press Y to proceed and N for single call (y/N) n
@@ -255,80 +265,83 @@ Continuous load gen for istio-ingressgateway-istio-system.apps.cluster-bne-d92d.
 Calling endpoint once
 customer => preference => recommendation v1 from '69d8cd757c-rqkj6': 1833
 ----
-
-4. Open Jaeger and show the error in the last few moments (that represents our request)
++
+. Open Jaeger and show the error in the last few moments (that represents our request)
 ====
-
-* Open Kubernetes extension
++
+. Open Kubernetes extension
 ** Select cluster
 ** Select namespaces (ensure *demo-app* is selected)
 ** Select Workloads
 ** Select Pods
-
++
 image::images/Kubernetes-Extension.png[]
-
-* Find the Recommendation-v2 pod, right click and select attach
++
+. Find the Recommendation-v2 pod, right click and select attach
 ** Select Java
 ** Select the recommendation container (and not the side car)
 
 ==== Hitting the breakpoint and fixing
 
-Assuming loadgen has been stopped, make a single call to the endpoint
+. Assuming loadgen has been stopped, make a single call to the endpoint
++
 ----
-$ $DEMO_HOME/scripts/project-load-gen.sh customer istio
+$DEMO_HOME/scripts/project-load-gen.sh customer --istio
 Continuous load gen for istio-ingressgateway-istio-system.apps.cluster-bne-d92d.bne-d92d.example.opentlc.com/customer?  Press Y to proceed and N for single call (y/N)
 
 Calling endpoint once
 customer => preference => recommendation v1 from '69d8cd757c-rqkj6': 1833
 ----
-
-* Wait until breakpoint is hit
++
+. Wait until breakpoint is hit
 ** show count in watch window
 ** Might be a little bit slow
-
++
 [INFO]
 .Signs that the debugger is attaching
 ====
 If the debugger connection is slow, you can show that the connection has been made by going to the debug panel and looking at the threads
 image:images/debugger-attach-sign.png[]
 ====
-
-* Walk through where the error is
++
+. Walk through where the error is
 ** search for where 'misbehave' is set
 ** Notice it's from an ENVIRONMENT Variable
 
+NOTE: If you don't want to show the code being fixed and recompiled then jump to <<Meanwhile: Quick fix in production,Production fix>>
+
 ===== Option 1: Hot Swap Code to test
-* Allow the debugger to continue execution
+. Allow the debugger to continue execution
 
-* Change the default from "true" to "false" and save the file
+. Change the default from "true" to "false" and save the file
 
-* Click the hotswap button, notice that the class begins transmit
-
+. Click the hotswap button, notice that the class begins transmit
++
 image::images/hot-swap.png[]
++
+. [red]#Set a breakpoint at the end of the function to prove that this return can now get hit#
 
-* [red]#Set a breakpoint at the end of the function to prove that this return can now get hit#
-
-* Submit another request to the endpoint after the upload of the class is done.
-
+. Submit another request to the endpoint after the upload of the class is done.
++
 ----
-$ $DEMO_HOME/scripts/project-load-gen.sh customer istio
+$DEMO_HOME/scripts/project-load-gen.sh customer --istio
 ----
-
-* Show that the end return endpoint is now being hit
-
-* Open Kiali and show that most recent call doesn't show the endpoint getting hit.
-
-* Next, show that this change was ephemeral by stopping the debugger and deleting the pod
-
++
+. Show that the end return endpoint is now being hit
++
+. Open Kiali and show that most recent call doesn't show the endpoint getting hit.
++
+. Next, show that this change was ephemeral by stopping the debugger and deleting the pod
++
 image::images/delete-now.png[]
-
-* Resubmit a request
-
++
+. Resubmit a request
++
 ----
-$ $DEMO_HOME/scripts/project-load-gen.sh customer istio
+$DEMO_HOME/scripts/project-load-gen.sh customer --istio
 ----
-
-* Show that the error re-appears in Kiali
++
+. Show that the error re-appears in Kiali
 
 ===== Option 2: Fix, recompile, and upload
 
@@ -337,28 +350,29 @@ $ $DEMO_HOME/scripts/project-load-gen.sh customer istio
 This section is unfinished.
 ====
 
-* Recompile the sources (*in VSCode bash*)
+. Recompile the sources (*in VSCode bash*)
++
 ----
 mvn clean install
 ----
-
++
 image::images/run_maven.png[]
-
-* Discuss how this container could now be built
++
+. Discuss how this container could now be built
 ** Show the other Dockerfile that is NOT in .devcontainer
 
 ==== Meanwhile: Quick fix in production
 
 Since the problem is with and environment variable, this is something we can change
 
-* Change the Environment Variable
+. Change the Environment Variable
 ** Can do in OpenShift directly (try this link:https://console-openshift-console.apps.service-mesh.openshifttc.com/k8s/ns/demo-app/deployments/recommendation-v2/environment[link])
-
++
 image::images/Misbehave_False.png[]
-
-** Add the new "MISBEHAVE" environment variable and set to *false*
-** Hit save.  
-
++
+. Add the new "MISBEHAVE" environment variable and set to *false*
+. Hit save.  
++
 [NOTE]
 .Setting the environment variable in the deployment instead
 ====
@@ -366,15 +380,21 @@ image::images/Misbehave_False.png[]
 oc set env deployment/recommendation-v2 MISBEHAVE="false"
 ----
 ====
-
-** _Notice that pod is destroyed and recreated_
-
-* Restart loadgen if necessary
++
+. _Notice that pod is destroyed and recreated_
++
+. Restart loadgen if necessary
++
 ----
- $ scripts/project-load-gen.sh customer istio                                                        Continuous load gen for istio-ingressgateway-istio-system.apps.cluster-bne-d92d.bne-d92d.example.opentlc.com/customer?  Press Y to proceed and N for single call (y/N)y
+$DEMO_HOME/scripts/project-load-gen.sh customer --istio                                                        Continuous load gen for istio-ingressgateway-istio-system.apps.cluster-bne-d92d.bne-d92d.example.opentlc.com/customer?  Press Y to proceed and N for single call (y/N)y
 ----
-
-* Check link:https://jaeger-istio-system.apps.ato-demo-replica.openshifttc.com/search?end=1570535773031000&limit=20&lookback=1h&maxDuration&minDuration&service=preference&start=1570532173031000[Jaeger]
++
+. Check Jaeger
++
+----
+echo "https://$(oc get route jaeger -o=jsonpath='{.spec.host}' -n demo-app-istio-system)/"
+----
++
 ** Notice no errors
 ** Hit "Find Traces" multiple times to see if there's any change
 
