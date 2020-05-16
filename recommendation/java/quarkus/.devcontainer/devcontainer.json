@@ -3,11 +3,14 @@
 	"dockerFile": "Dockerfile",
 	// Update this with the mount point of your config file for kubernetes so that you can have that info in the container
 	"runArgs": [ "-v", "/Users/marc.hildenbrand/.kube:/root/.kube", 
+		"-v", "${env:HOME}/.kube:/home/jboss/.kube",
+		"-v", "${env:HOME}/.vs-kubernetes:/home/jboss/.vs-kubernetes",
 //		"-v","/Users/marc.hildenbrand/.vs-kubernetes:/jboss/.vs-kubernetes",
 		"--env", "MISBEHAVE=false"],
 	"appPort": "8080",
 	"settings":{
 		"terminal.integrated.shell.linux": "/bin/bash",
+		"workbench.colorTheme": "Solarized Dark",
 		"vs-kubernetes": { 
 			"vs-kubernetes.namespace": "", 
 			"vs-kubernetes.kubectl-path": "/usr/bin/kubectl", 
