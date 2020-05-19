@@ -501,13 +501,13 @@ NOTE: This is demonstrated best when all traffic is routed only to v1 of the cus
 . Review the file and then apply it to the cluster
 +
 ----
-$ oc apply -f $DEMO_HOME/istiofiles/virtual-service-recommendation-header.yml
+oc apply -f $DEMO_HOME/istiofiles/virtual-service-recommendation-header.yml
 ----
 +
 . [blue]#OPTIONAL:# Now you can show the audience what has just been setup using istioctl
 +
 ----
-$ istioctl x describe pod $(oc get pods | grep -i recommendation-v3 | grep Running | awk '{print $1}')
+istioctl x describe pod -i demo-app-istio-system $(oc get pods | grep -i recommendation-v3 | grep Running | awk '{print $1}')
 ----
 +
 ** Successful output will look like this (if output doesn't match, then look to <<Debugging with Istioctl,Troubleshooting>> section)
@@ -556,7 +556,8 @@ image:images/test-web.png[]
 
 You can look up route information by using the following command (where _recommendation-v3-5-jsxm9_ is the podname to which you want determine routes).  This output shows that there are none
 ----
-$ istioctl x describe pod recommendation-v3-5-jsxm9
+istioctl x describe pod -i demo-app-istio-system recommendation-v3-5-jsxm9
+
 Pod: recommendation-v3-5-jsxm9
    Pod Ports: 8443 (recommendation-v3), 8778 (recommendation-v3), 8080 (recommendation-v3), 15090 (istio-proxy)
 Suggestion: add 'version' label to pod for Istio telemetry.
