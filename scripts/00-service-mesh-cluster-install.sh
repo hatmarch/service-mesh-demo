@@ -36,7 +36,13 @@ oc apply -f "$DEMO_HOME/istiofiles/install/subscription.yaml"
 # would love to replace this is an oc wait command, but the csv does not appear to have a status.condition that lends itself to this
 declare -r SUBS=( elastic-search jaeger kiali servicemesh )
 for SUB in "${SUBS[@]}"; do
-    declare CSV=$(oc get sub/$SUB -o jsonpath='{.status.currentCSV}' -n openshift-operators)
+    declare CSV=""
+
+    while [[ -z "$CSV" ]]; do
+        sleep 2
+        CSV=$(oc get sub/$SUB -o jsonpath='{.status.currentCSV}' -n openshift-operators)
+    done
+
     echo "Waiting for operator ${CSV} installation to complete..."
     while true; do
         if [[ "$(oc get csv/$CSV -n ${ISTIO_PRJ} -o jsonpath='{.status.phase}' 2>/dev/null)" == "Succeeded" ]]; then
