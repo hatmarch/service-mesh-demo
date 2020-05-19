@@ -9,7 +9,8 @@
 		// comment the following line out if you want to use local installation on container instead
 		"-v", "${env:HOME}/.oh-my-zsh:/home/jboss/.oh-my-zsh",
 		"-v", "${env:HOME}/.helm:/home/jboss/.helm",
-		"-v", "${env:HOME}/.ssh:/home/jboss/.ssh" ],
+		"-v", "${env:HOME}/.ssh:/home/jboss/.ssh",
+		"-e",  "DEMO_HOME=/workspaces/service-mesh-demo" ],
 	"appPort": "8080",
 	"settings": {
 		"terminal.integrated.shell.linux": "/bin/zsh",

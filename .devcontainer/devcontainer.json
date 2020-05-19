@@ -11,7 +11,8 @@
 		"-v", "${env:HOME}/.oh-my-zsh:/home/jboss/.oh-my-zsh",
 		"-v", "${env:HOME}/.helm:/home/jboss/.helm",
 		"-v", "${env:HOME}/.ssh:/home/jboss/.ssh",
-		"-e", "AWS_PROFILE=redhat"
+		"-e", "AWS_PROFILE=redhat",
+		"-e",  "DEMO_HOME=/workspaces/service-mesh-demo"
 		//"AWS_PROFILE=${env:AWS_PROFILE}"
 	],
 	"extensions": [
