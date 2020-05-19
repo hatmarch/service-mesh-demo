@@ -6,17 +6,12 @@ set -e -u -o pipefail
 declare -r SCRIPT_DIR=$(cd -P $(dirname $0) && pwd)
 declare -r DEMO_HOME="$SCRIPT_DIR/.."
 declare PROJECT_NAME="demo-app"
-declare REMOVE_OPERATORS="true"
 
 while (( "$#" )); do
     case "$1" in
         -p|--project)
             PROJECT_NAME=$2
             shift 2
-            ;;
-        -k|--keep-operators)
-            REMOVE_OPERATORS=""
-            shift 1
             ;;
         -*|--*)
             echo "Error: Unsupported flag $1"
