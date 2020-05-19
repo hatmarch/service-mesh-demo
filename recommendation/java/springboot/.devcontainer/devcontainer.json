@@ -7,7 +7,8 @@
 
 		// use local .oh-my-zsh configuration if it exists (overwriting one in container).
 		// comment the following line out if you want to use local installation on container instead
-		"-v", "${env:HOME}/.oh-my-zsh:/home/jboss/.oh-my-zsh",
+		"-v", "${env:HOME}/.oh-my-zsh:/opt/jboss/.oh-my-zsh",
+//		"-v", "${env:HOME}/.zshrc:/root/.zshrc",
 		"-v", "${env:HOME}/.helm:/home/jboss/.helm",
 		"-v", "${env:HOME}/.ssh:/home/jboss/.ssh",
 		"-e",  "DEMO_HOME=/workspaces/service-mesh-demo" ],
