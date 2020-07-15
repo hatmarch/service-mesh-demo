@@ -37,10 +37,11 @@ code .
 +
 .At the prompt, select "Reopen in container".  Show the Dockerfile in the .devcontainer directory and point out that nothing is installed locally
 
-. Within a bash shell in the container, run the following commands
+. Within a bash shell in the container, run the following commands (assuming that `demo-app` is the name of the project that your services were deployed to)
 +
 ----
 export DEMO_HOME=$(pwd)
+oc project demo-app
 mvn clean install -DskipTests
 ----
 +
@@ -125,7 +126,7 @@ Our toy app has some problems out of the gate.  Let's run calls to it in a windo
 . In a shell window where you are logged into the OpenShift cluster, run the following
 +
 ----
-DEMO_HOME/scripts/project-load-gen.sh customer --istio
+$DEMO_HOME/scripts/project-load-gen.sh customer --istio
 
 Starting load gen for istio-ingressgateway-istio-system.apps.service-mesh.openshifttc.com/customer.  Proceed? (y/N)
 ----
