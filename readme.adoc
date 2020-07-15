@@ -95,6 +95,18 @@ recommendation-v2-754b5cf657-ljtkz   2/2     Running   0          2m31s
 
 == Appendix
 
+=== Uninstalling the Demo
+
+You can use link:scripts/remove-demo.sh[this script] to remove the demo (and Service Mesh) from the cluster.  
+
+----
+$DEMO_HOME/scripts/remove-demo.sh
+----
+
+If you want to keep operators installed, use the `-k` flag.  If you are removing a project different from the default `demo-app` use the `-p` flag.
+
+Sometimes a project finalizer can get stuck, in these cases you can re-run the command with the -f flag to force the removal of the project in question.
+
 === Helpful `istioctl` commands
 
 For general information about istioctl (1.4), see the "Istioldie" documentation link:https://archive.istio.io/v1.4/docs/reference/commands/istioctl/[here]
