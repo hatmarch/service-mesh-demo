@@ -44,6 +44,9 @@ force-clean() {
 
 declare ISTIO_PRJ="${PROJECT_NAME}-istio-system"
 
+# NOTE: before deleting any project involving istio, the ServiceMeshControlPlane must first be deleted, as per here: https://access.redhat.com/solutions/4597081
+oc delete smcp all -n $ISTIO_PRJ
+
 # Delete all the projects
 declare PROJECTS=( ${PROJECT_NAME} ${ISTIO_PRJ} )
 for PROJECT in "${PROJECTS[@]}"; do
