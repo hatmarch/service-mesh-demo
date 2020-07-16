@@ -529,6 +529,28 @@ VirtualService: recommendation
    1 additional destination(s) that will not reach this pod
 ----
 +
+.A slightly less useful version of the above command
+====
+You can also query at the service level to look at the overall service instead of what requests will be reaching the pod
+
+----
+istioctl x describe svc recommendation -i demo-app-istio-system
+----
+Generates this (slightly confusing) output:
+----
+Service: recommendation
+   Port: http 8080/HTTP targets pod port 8080
+DestinationRule: recommendation for "recommendation"
+   Matching subsets: version-v1,version-v2,version-v3
+   No Traffic Policy
+Pod is PERMISSIVE, client protocol unspecified
+VirtualService: recommendation
+   when headers are baggage-user-agent=regex:".*iPhone OS.*"
+   Weight 50%
+   Weight 50%
+----
+====
++
 . Issue a command with a non-compatible user agent
 +
 ----
