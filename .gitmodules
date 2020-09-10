@@ -1,0 +1,4 @@
+[submodule "microservices"]
+	path = microservices
+	url = https://github.com/hatmarch/toy-microservices.git
+	branch = master
