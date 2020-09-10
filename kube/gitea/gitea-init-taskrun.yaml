@@ -1,0 +1,76 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  generateName: init-gitea-
+spec:
+  taskSpec:
+    params:
+      - name: GOGS_USER
+        type: string
+        description: Gogs admin username
+        default: gogs
+      - name: GOGS_PASSWORD
+        type: string
+        description: Gogs admin password
+        default: gogs
+      - name: GITEA_SVC
+        type: string
+        description: The name of the Gitea k8 service
+        default: gitea
+    stepTemplate:
+      env:
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+    steps:
+      - name: create-gitea-admin
+        image: quay.io/openshift/origin-cli:latest
+        script: |
+          #!/usr/bin/env bash
+
+          set -Eeuxo pipefail
+
+          oc exec svc/$(params.GITEA_SVC) -- /home/gitea/gitea -w /home/gitea/ -c /home/gitea/conf/app.ini admin create-user --username $(params.GOGS_USER) --password gogs --email $(params.GOGS_USER)@gogs.com \
+            --must-change-password=false --access-token
+
+      - name: init-gitea
+        image: quay.io/siamaksade/python-oc
+        script: |
+          #!/usr/bin/env python3
+
+          import os
+          import requests 
+
+          gogs_user = "$(params.GOGS_USER)"
+          gogs_pwd = "$(params.GOGS_PASSWORD)"
+          # FIXME: Webhook url could be the name of the svc with the port at the end
+          # webhookURL = "http://" + os.popen('oc get route webhook -o template --template="{{.spec.host}}"').read()
+          giteaURL = "http://" + gogs_user + ":" + gogs_pwd + "@" + os.popen('oc get svc $(params.GITEA_SVC) -o template --template="{{.spec.clusterIP}}"').read() + ":3000"
+          print("Gogs url is: " + giteaURL)
+
+          # create git repo
+          data_repo = '{"clone_addr": "https://github.com/hatmarch/toy-microservices.git", "uid": 1, "repo_name": "demo-microservices"}'
+          # headers = {"Authorization": "token ${TOKEN}", "Content-Type": "application/json" }
+          headers = {"Content-Type": "application/json"}
+          resp = requests.post(url = giteaURL + "/api/v1/repos/migrate", headers = headers, data = data_repo)  
+
+          if resp.status_code != 200 and resp.status_code != 201:
+            print("Error creating git repo (status code: {})".format(resp.status_code))
+            print(resp.content)
+          else:
+            print("Created git repo"demo-microservices")
+
+          # # configure webhook
+          # data_webhook = '{"type": "gogs", "config": { "url": "' + webhookURL + '", "content_type": "json"}, "events": ["push"], "active": true}'
+          # resp = requests.post(url = giteaURL + "/api/v1/repos/" + gogs_user + ""demo-microservices/hooks", 
+          #                     headers = headers, 
+          #                     data = data_webhook) 
+          
+          # if resp.status_code != 200 and resp.status_code != 201:
+          #   print("Error configuring the webhook (status code: {})".format(resp.status_code))
+          #   print(resp.content)
+          # else:
+          #   print("Configured webhook: " + webhookURL)
+
+

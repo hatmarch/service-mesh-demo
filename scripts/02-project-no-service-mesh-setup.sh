@@ -4,6 +4,7 @@ set -e -u -o pipefail
 declare -r SCRIPT_DIR=$(cd -P $(dirname $0) && pwd)
 declare -r DEMO_HOME="$SCRIPT_DIR/.."
 declare PROJECT_NAME="demo-app"
+declare CICD_PRJ="${PROJECT_NAME}-cicd"
 
 while (( "$#" )); do
     case "$1" in
@@ -78,3 +79,13 @@ oc apply -f $DEMO_HOME/kube/recommendation/Service.yml  -n $PROJECT_NAME
 # open a route for demonstration purposes
 oc expose svc recommendation -n $PROJECT_NAME
 
+info "Initiatlizing git repository in gitea and configuring webhooks"
+oc apply -f $DEMO_HOME/kube/gitea/gitea-server-cr.yaml -n $CICD_PRJ
+oc wait --for=condition=Running Gitea/gitea-server -n $CICD_PRJ --timeout=2m
+echo -n "Waiting for gitea deployment to appear..."
+while [[ -z "$(oc get deploy gitea -n $CICD_PRJ 2>/dev/null)" ]]; do
+    echo -n "."
+    sleep 1
+done
+echo "done!"
+oc rollout status deploy/gitea -n $CICD_PRJ

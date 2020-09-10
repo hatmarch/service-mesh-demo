@@ -31,6 +31,28 @@ while (( "$#" )); do
     esac
 done
 
+remove-operator()
+{
+    OPERATOR_NAME=$1
+    OPERATOR_PRJ=${2:-openshift-operators}
+
+    echo "Uninstalling operator: ${OPERATOR_NAME} from project ${OPERATOR_PRJ}"
+    # NOTE: there is intentionally a space before "currentCSV" in the grep since without it f.currentCSV will also be matched which is not what we want
+    CURRENT_CSV=$(oc get sub ${OPERATOR_NAME} -n ${OPERATOR_PRJ} -o yaml | grep " currentCSV:" | sed "s/.*currentCSV: //")
+    oc delete sub ${OPERATOR_NAME} -n ${OPERATOR_PRJ} || true
+    oc delete csv ${CURRENT_CSV} -n ${OPERATOR_PRJ} || true
+
+    # Attempt to remove any orphaned install plan named for the csv
+    oc get installplan -n ${OPERATOR_PRJ} | grep ${CURRENT_CSV} | awk '{print $1}' 2>/dev/null | xargs oc delete installplan -n $OPERATOR_PRJ
+}
+
+remove-crds() 
+{
+    API_NAME=$1
+
+    oc get crd -oname | grep "${API_NAME}" | xargs oc delete
+}
+
 # Assumes proxy has been setup
 force-clean() {
     declare NAMESPACE=$1
@@ -43,22 +65,27 @@ force-clean() {
 }
 
 declare ISTIO_PRJ="${PROJECT_NAME}-istio-system"
+declare CICD_PRJ="${PROJECT_NAME}-cicd"
 
 # NOTE: before deleting any project involving istio, the ServiceMeshControlPlane must first be deleted, as per here: https://access.redhat.com/solutions/4597081
 oc delete smcp all -n $ISTIO_PRJ
 
 # Delete all the projects
-declare PROJECTS=( ${PROJECT_NAME} ${ISTIO_PRJ} )
+declare PROJECTS=( ${PROJECT_NAME} ${ISTIO_PRJ} ${CICD_PRJ} )
 for PROJECT in "${PROJECTS[@]}"; do
     oc get ns ${PROJECT} 2>/dev/null && oc delete project ${PROJECT}
 done
 
 if [[ "${REMOVE_OPERATORS}" ]]; then
-    declare SUBS=( servicemesh jaeger kiali elastic-search )
-    for SUB in "${SUBS[@]}"; do
-        declare CSV=$(oc get sub/$SUB -o jsonpath='{.status.currentCSV}' -n openshift-operators)
-        oc delete sub/$SUB -n openshift-operators
-        oc delete csv/$CSV -n openshift-operators
+
+    echo "Removing Gitea Operator"
+    oc delete project gpte-operators || true
+    oc delete clusterrole gitea-operator || true
+    remove-crds gitea || true
+
+    declare OPERATORS=( servicemesh jaeger kiali elastic-search openshift-pipelines-operator )
+    for OPERATOR in "${OPERATORS[@]}"; do
+        remove-operator ${OPERATOR}
     done
 fi
 

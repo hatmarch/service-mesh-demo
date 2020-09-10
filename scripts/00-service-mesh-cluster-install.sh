@@ -6,6 +6,23 @@ declare -r SCRIPT_DIR=$(cd -P $(dirname $0) && pwd)
 declare -r DEMO_HOME="$SCRIPT_DIR/.."
 declare PROJECT_NAME="demo-app"
 
+wait_for_crd()
+{
+    local CRD=$1
+    local PROJECT=$(oc project -q)
+    if [[ "${2:-}" ]]; then
+        # set to the project passed in
+        PROJECT=$2
+    fi
+
+    # Wait for the CRD to appear
+    while [ -z "$(oc get $CRD 2>/dev/null)" ]; do
+        sleep 1
+    done 
+    sleep 2
+    oc wait --for=condition=Established $CRD --timeout=6m -n $PROJECT
+}
+
 while (( "$#" )); do
     case "$1" in
         -p)
@@ -21,20 +38,52 @@ while (( "$#" )); do
     esac
 done
 
+echo "Installing Tekton operator for aspects of setup"
+cat <<EOF | oc apply -f -
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: openshift-pipelines-operator
+  namespace: openshift-operators
+spec:
+  channel: preview
+  name: openshift-pipelines-operator-rh
+  source: redhat-operators
+  sourceNamespace: openshift-marketplace
+EOF
+
+declare giteaop_prj=gpte-operators
+echo "Installing gitea operator in ${giteaop_prj}"
+oc apply -f $DEMO_HOME/kube/gitea/gitea-crd.yaml
+oc apply -f $DEMO_HOME/kube/gitea/gitea-cluster-role.yaml
+oc get ns $giteaop_prj 2>/dev/null  || { 
+    oc new-project $giteaop_prj --display-name="GPTE Operators"
+}
+
+# create the service account and give necessary permissions
+oc get sa gitea-operator -n $giteaop_prj 2>/dev/null || {
+  oc create sa gitea-operator -n $giteaop_prj
+}
+oc adm policy add-cluster-role-to-user gitea-operator system:serviceaccount:$giteaop_prj:gitea-operator
+
+# install the operator to the gitea project
+oc apply -f $DEMO_HOME/kube/gitea/gitea-operator.yaml -n $giteaop_prj
+sleep 2
+oc rollout status deploy/gitea-operator -n $giteaop_prj
+
+
 declare -r ISTIO_PRJ="${PROJECT_NAME}-istio-system"
 echo "Creating new istio control plane project at $ISTIO_PRJ"
 oc get ns $ISTIO_PRJ 2>/dev/null  || { 
     oc new-project $ISTIO_PRJ --display-name="Service Mesh Control Plane for $PROJECT_NAME"
 }
 
-# install the official Redhat operator catalog
-oc apply -f "$DEMO_HOME/istiofiles/install/redhat-operators-csc.yaml"
-
 # subscribe to service mesh operator (in all projects, does not support per project installation)
 oc apply -f "$DEMO_HOME/istiofiles/install/subscription.yaml"
 
 # would love to replace this is an oc wait command, but the csv does not appear to have a status.condition that lends itself to this
-declare -r SUBS=( elastic-search jaeger kiali servicemesh )
+# declare -r SUBS=( elastic-search jaeger kiali servicemesh )
+declare -r SUBS=( servicemesh )
 for SUB in "${SUBS[@]}"; do
     declare CSV=""
 
