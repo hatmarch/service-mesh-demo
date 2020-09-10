@@ -16,13 +16,13 @@ Pre-req
 
 # Environment variables and secrets for customer v2 should be setup (incorrectly) based on 07
 cdt
-oc apply -f customer/kubernetes/Service-v2-ssl.yml
-oc apply -f customer/kubernetes/Route-ssl.yml
+oc apply -f kube/customer/Service-v2-ssl.yml
+oc apply -f kube/customer/Route-ssl.yml
 
 # NOTE: route-ssl may have a specific host in it that should be changed
 # Turn off Istio Lockdown
 oc delete -f scripts/network-policy.yaml
-oc apply -f customer/kubernetes/Deployment-v2-ssl-buggy.yml
+oc apply -f kube/customer/Deployment-v2-ssl-buggy.yml
 ----
 
 == Stop the crashing

@@ -32,13 +32,13 @@ oc delete DestinationRule --all -n $PROJECT_NAME
 sed "s/demo-app/${PROJECT_NAME}/g" ${DEMO_HOME}/istiofiles/install/service-mesh-roll.yaml | oc apply -f - -n $ISTIO_PRJ
 
 # Customer gateway, virtual service, and destination rule
-oc apply -f $DEMO_HOME/customer/kubernetes/Gateway-no-virtual-service.yml -n $PROJECT_NAME
-oc apply -f $DEMO_HOME/customer/kubernetes/destination-rule-customer-v1-v2.yml -n $PROJECT_NAME
-oc apply -f $DEMO_HOME/customer/kubernetes/virtual-service-customer-v1_and_v2.yml -n $PROJECT_NAME
+oc apply -f $DEMO_HOME/kube/customer/Gateway-no-virtual-service.yml -n $PROJECT_NAME
+oc apply -f $DEMO_HOME/kube/customer/destination-rule-customer-v1-v2.yml -n $PROJECT_NAME
+oc apply -f $DEMO_HOME/kube/customer/virtual-service-customer-v1_and_v2.yml -n $PROJECT_NAME
 
 # Add the preference virtual service and destination rule (mostly for making sure no retry on error)
-oc apply -f $DEMO_HOME/preference/kubernetes/destination-rule-preference.yml -n $PROJECT_NAME
-oc apply -f $DEMO_HOME/preference/kubernetes/virtual-service-preference.yml -n $PROJECT_NAME
+oc apply -f $DEMO_HOME/kube/preference/destination-rule-preference.yml -n $PROJECT_NAME
+oc apply -f $DEMO_HOME/kube/preference/virtual-service-preference.yml -n $PROJECT_NAME
 
 # Add the destination rule and virtual service for Recommendation
 oc apply -f $DEMO_HOME/istiofiles/destination-rule-recommendation-v1-v2.yml -n $PROJECT_NAME

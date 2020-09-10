@@ -16,7 +16,7 @@ wait_for_user()
     done
 }
 
-oc apply -f recommendation/kubernetes/Deployment-v2.yml -n tutorial
+oc apply -f kube/recommendation/Deployment-v2.yml -n tutorial
 
 wait_for_user "Press 'y' you're ready to setup istio rules to route only to v1: "
 

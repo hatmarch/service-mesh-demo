@@ -42,12 +42,12 @@ oc new-project $PROJECT_NAME --display-name='Service Mesh Demo Project'
 # Customer 
 #
 # version 1
-oc apply -f $DEMO_HOME/customer/kubernetes/Deployment.yml -n $PROJECT_NAME
+oc apply -f $DEMO_HOME/kube/customer/Deployment.yml -n $PROJECT_NAME
 
 # version 2
-oc apply -f $DEMO_HOME/customer/kubernetes/Deployment-v2-dotnet-customer.yml -n $PROJECT_NAME
+oc apply -f $DEMO_HOME/kube/customer/Deployment-v2-dotnet-customer.yml -n $PROJECT_NAME
 
-oc apply -f $DEMO_HOME/customer/kubernetes/Service.yml -n $PROJECT_NAME
+oc apply -f $DEMO_HOME/kube/customer/Service.yml -n $PROJECT_NAME
 
 # create a route (eventually replaced with an instio gateway)
 oc expose svc customer -n $PROJECT_NAME
@@ -55,8 +55,8 @@ oc expose svc customer -n $PROJECT_NAME
 #
 # Preference Service
 #
-oc apply -f $DEMO_HOME/preference/kubernetes/Deployment.yml -n $PROJECT_NAME
-oc apply -f $DEMO_HOME/preference/kubernetes/Service.yml -n $PROJECT_NAME
+oc apply -f $DEMO_HOME/kube/preference/Deployment.yml -n $PROJECT_NAME
+oc apply -f $DEMO_HOME/kube/preference/Service.yml -n $PROJECT_NAME
 
 # open a route for demonstration purposes
 oc expose svc preference -n $PROJECT_NAME
@@ -65,15 +65,15 @@ oc expose svc preference -n $PROJECT_NAME
 # Recommendation Service
 #
 # version 1
-oc apply -f $DEMO_HOME/recommendation/kubernetes/Deployment.yml  -n $PROJECT_NAME
+oc apply -f $DEMO_HOME/kube/recommendation/Deployment.yml  -n $PROJECT_NAME
 
 # version 2
-oc apply -f $DEMO_HOME/recommendation/kubernetes/Deployment-v2-buggy-only.yml -n $PROJECT_NAME
+oc apply -f $DEMO_HOME/kube/recommendation/Deployment-v2-buggy-only.yml -n $PROJECT_NAME
 
 # version 3 (NOTE: Don't deploy version 3 by default, we expect to build it)
-# oc apply -f $DEMO_HOME/recommendation/kubernetes/Deployment-v3.yml -n $NAMESPACE
+# oc apply -f $DEMO_HOME/kube/recommendation/Deployment-v3.yml -n $NAMESPACE
 
-oc apply -f $DEMO_HOME/recommendation/kubernetes/Service.yml  -n $PROJECT_NAME
+oc apply -f $DEMO_HOME/kube/recommendation/Service.yml  -n $PROJECT_NAME
 
 # open a route for demonstration purposes
 oc expose svc recommendation -n $PROJECT_NAME

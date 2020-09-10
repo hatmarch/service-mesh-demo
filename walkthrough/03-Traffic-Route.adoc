@@ -37,9 +37,9 @@ cdd
 ** Show and explain virtual services (way of routing things, even at layer 7)
 ----
 cdt
-cat recommendation/kubernetes/Deployment-v2-buggy.yml
+cat kube/recommendation/Deployment-v2-buggy.yml
 
-oc apply -f recommendation/kubernetes/Deployment-v2-buggy.yml -n tutorial
+oc apply -f kube/recommendation/Deployment-v2-buggy.yml -n tutorial
 oc get pods -w
 ----
 * Wait until pods come up

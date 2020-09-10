@@ -12,7 +12,7 @@ pool:
 variables:
   buildConfiguration: 'Debug'
   customerProjectPath: customer/dotnet/
-  kubernetesDeploymentYamlPath: customer/kubernetes
+  kubernetesDeploymentYamlPath: kube/customer
 
 
 steps:

@@ -118,7 +118,7 @@ oc apply -f istiofiles/virtual-service-recommendation-v1_and_v2_50_50.yml
 * Simulate build and deploy
 ----
 cdt
-oc apply -f recommendation/kubernetes/Deployment-v2.yml
+oc apply -f kube/recommendation/Deployment-v2.yml
 ----
 
 ** _Shell:_ Notice that it takes a while for the new deployment to come up, and without the "buggy" message

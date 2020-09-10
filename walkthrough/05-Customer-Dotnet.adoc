@@ -40,8 +40,8 @@ image:images/route_blocked.png[]
 
 ----
 cdt
-cat customer/kubernetes/Gateway-no-virtual-service.yml
-oc apply -f customer/kubernetes/Gateway-no-virtual-service.yml
+cat kube/customer/Gateway-no-virtual-service.yml
+oc apply -f kube/customer/Gateway-no-virtual-service.yml
 ----
 ** Notice that the istio-gateway already has a public URL (see _OpenShift istio-system project)
 
@@ -51,9 +51,9 @@ image::images/gateway_route.png[]
 ----
 clear
 cdt
-cat customer/kubernetes/virtual-service-customer-v1_only.yml
-oc apply -f customer/kubernetes/destination-rule-customer-v1-v2.yml
-oc apply -f customer/kubernetes/virtual-service-customer-v1_only.yml
+cat kube/customer/virtual-service-customer-v1_only.yml
+oc apply -f kube/customer/destination-rule-customer-v1-v2.yml
+oc apply -f kube/customer/virtual-service-customer-v1_only.yml
 ----
 ** Notice the _/customer_ suffix.  This will get appended to the istio-gateway's base URL
 ** Notice also the 0 weight for a v2 subset (which we're about to add)

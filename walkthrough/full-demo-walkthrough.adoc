@@ -486,7 +486,7 @@ rule.config.istio.io "no-recommendation-to-preference" deleted
 . Now apply the changes
 +
 ----
-kubectl apply -f $DEMO_HOME/customer/kubernetes/virtual-service-customer-v1_only.yml
+kubectl apply -f $DEMO_HOME/kube/customer/virtual-service-customer-v1_only.yml
 ----
 +
 . Go back to Kiali.  The errors should stop
