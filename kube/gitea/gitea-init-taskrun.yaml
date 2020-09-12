@@ -59,7 +59,7 @@ spec:
             print("Error creating git repo (status code: {})".format(resp.status_code))
             print(resp.content)
           else:
-            print("Created git repo"demo-microservices")
+            print("Created git repo demo-microservices")
 
           # # configure webhook
           # data_webhook = '{"type": "gogs", "config": { "url": "' + webhookURL + '", "content_type": "json"}, "events": ["push"], "active": true}'

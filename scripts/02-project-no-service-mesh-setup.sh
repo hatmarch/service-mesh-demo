@@ -87,4 +87,6 @@ done
 echo "done!"
 oc rollout status deploy/gitea -n $CICD_PRJ
 
-# fixme: Run the gitea pipeline task
+echo "Initializing gitea"
+oc create -f $DEMO_HOME/kube/gitea/gitea-init-taskrun.yaml -n $CICD_PRJ
+tkn tr logs -L -f -n ${CICD_PRJ}
