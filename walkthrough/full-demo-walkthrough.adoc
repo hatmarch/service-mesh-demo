@@ -90,8 +90,8 @@ Make sure you have setup up to step three in the *pre-requisites* before you att
 . From the vscode shell, run the following command to create a new build and start one
 +
 ----
-oc new-build --name recommendation-v3 java:8 --binary -l app=recommendation,version=v3 -n demo-app
-oc start-build recommendation-v3 --from-file target/*.jar --follow -n demo-app
+oc new-build --name recommendation-v3 java:11 --binary -l app=recommendation,version=v3 -e JAVA_APP_JAR=recommendation-1.0-SNAPSHOT-runner.jar -n demo-app
+oc start-build recommendation-v3 --from-dir target --follow -n demo-app
 ----
 +
 ** Explain that this is building within the java container and installing our binary (that we made locally) within it.  Explain that there is S2I built into OpenShift to allow integration with a git repo.
@@ -104,7 +104,7 @@ NOTE: As per the instructions link:https://docs.openshift.com/container-platform
 oc new-app recommendation-v3 -l app=recommendation,version=v3,app.kubernetes.io/part-of=Recommendation -e JAVA_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,address=5000,server=y,suspend=n"
 
 # Update the template of the deployment config to ensure that recommendation-v3 pods get a sidecar injected
-oc patch dc/recommendation-v3 --patch '{"spec":{"template":{"metadata":{"annotations": { "sidecar.istio.io/inject":"true" }}}}}'
+oc patch deploy/recommendation-v3 --patch '{"spec":{"template":{"metadata":{"annotations": { "sidecar.istio.io/inject":"true" }}}}}'
 
 oc expose svc recommendation-v3
 ----
