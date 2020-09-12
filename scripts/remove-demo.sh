@@ -14,7 +14,7 @@ while (( "$#" )); do
             PROJECT_NAME=$2
             shift 2
             ;;
-        -f|--force)
+        -f|--force) 
             FORCE="true"
             shift 1
             ;;
@@ -83,10 +83,18 @@ if [[ "${REMOVE_OPERATORS}" ]]; then
     oc delete clusterrole gitea-operator || true
     remove-crds gitea || true
 
-    declare OPERATORS=( servicemesh jaeger kiali elastic-search openshift-pipelines-operator )
+    declare OPERATORS=( servicemesh jaeger kiali openshift-pipelines-operator )
     for OPERATOR in "${OPERATORS[@]}"; do
-        remove-operator ${OPERATOR}
+        remove-operator ${OPERATOR} || true
     done
+
+    remove-operator elastic-search openshift-operators-redhat || true
+
+    declare CRDS=(maistra jaeger kiali elasticsearch)
+    for CRD in "${CRDS[@]}"; do
+        remove-crds ${CRD} || true
+    done
+
 fi
 
 declare PROXY_PID=""

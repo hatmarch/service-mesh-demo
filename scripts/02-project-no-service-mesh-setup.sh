@@ -33,12 +33,9 @@ done
 # oc adm policy add-scc-to-group anyuid system:authenticated
 
 oc new-project $PROJECT_NAME --display-name='Service Mesh Demo Project'
-
-# oc adm policy add-scc-to-user privileged -z default -n $NAMESPACE
-
-# Setup a deployer account for azure pipelines
-# $SCRIPT_DIR/ato-create-deployer-service-account.sh
-
+oc get ns ${CICD_PRJ} 2>/dev/null || {
+    oc new-project ${CICD_PRJ}
+}
 #
 # Customer 
 #
@@ -79,7 +76,7 @@ oc apply -f $DEMO_HOME/kube/recommendation/Service.yml  -n $PROJECT_NAME
 # open a route for demonstration purposes
 oc expose svc recommendation -n $PROJECT_NAME
 
-info "Initiatlizing git repository in gitea and configuring webhooks"
+echo "Initiatlizing git repository in gitea and configuring webhooks"
 oc apply -f $DEMO_HOME/kube/gitea/gitea-server-cr.yaml -n $CICD_PRJ
 oc wait --for=condition=Running Gitea/gitea-server -n $CICD_PRJ --timeout=2m
 echo -n "Waiting for gitea deployment to appear..."
@@ -89,3 +86,5 @@ while [[ -z "$(oc get deploy gitea -n $CICD_PRJ 2>/dev/null)" ]]; do
 done
 echo "done!"
 oc rollout status deploy/gitea -n $CICD_PRJ
+
+# fixme: Run the gitea pipeline task

@@ -82,8 +82,8 @@ oc get ns $ISTIO_PRJ 2>/dev/null  || {
 oc apply -f "$DEMO_HOME/istiofiles/install/subscription.yaml"
 
 # would love to replace this is an oc wait command, but the csv does not appear to have a status.condition that lends itself to this
-# declare -r SUBS=( elastic-search jaeger kiali servicemesh )
-declare -r SUBS=( servicemesh )
+# FIXME: Should also check elastic-search but this is in a different project than the other operators
+declare -r SUBS=(  jaeger kiali servicemesh )
 for SUB in "${SUBS[@]}"; do
     declare CSV=""
 
