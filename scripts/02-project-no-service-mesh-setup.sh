@@ -89,3 +89,7 @@ while [[ -z "$(oc get deploy gitea -n $CICD_PRJ 2>/dev/null)" ]]; do
 done
 echo "done!"
 oc rollout status deploy/gitea -n $CICD_PRJ
+
+echo "Initializing gitea"
+oc create -f $DEMO_HOME/kube/gitea/gitea-init-taskrun.yaml -n $CICD_PRJ
+tkn tr logs -L -f -n ${CICD_PRJ}
