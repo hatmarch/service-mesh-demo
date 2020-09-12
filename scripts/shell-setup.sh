@@ -11,6 +11,16 @@ fi
 
 export DEMO_HOME=$( cd "$(dirname "${SCRIPT}")/.." ; pwd -P )
 
+# shorthand for creating a pipeline run file and watching the logs
+pr () {
+    FILE="$1"
+    oc create -f $FILE && tkn pr logs -L -f
+}
+
+tskr () {
+    FILE="$1"
+    oc create -f $FILE && tkn tr logs -L -f
+}
 
 aws-up() {
     local CLUSTER_NAME=${1:-${CLUSTERNAME}}
