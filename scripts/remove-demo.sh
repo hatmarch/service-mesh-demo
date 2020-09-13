@@ -68,7 +68,7 @@ declare ISTIO_PRJ="${PROJECT_NAME}-istio-system"
 declare CICD_PRJ="${PROJECT_NAME}-cicd"
 
 # NOTE: before deleting any project involving istio, the ServiceMeshControlPlane must first be deleted, as per here: https://access.redhat.com/solutions/4597081
-oc delete smcp all -n $ISTIO_PRJ
+oc delete smcp --all -n $ISTIO_PRJ
 
 # Delete all the projects
 declare PROJECTS=( ${PROJECT_NAME} ${ISTIO_PRJ} ${CICD_PRJ} )
