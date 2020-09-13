@@ -68,8 +68,14 @@ oc apply -f $DEMO_HOME/kube/recommendation/Deployment.yml  -n $PROJECT_NAME
 # version 2
 oc apply -f $DEMO_HOME/kube/recommendation/Deployment-v2-buggy-only.yml -n $PROJECT_NAME
 
-# version 3 (NOTE: Don't deploy version 3 by default, we expect to build it)
-# oc apply -f $DEMO_HOME/kube/recommendation/Deployment-v3.yml -n $NAMESPACE
+# version 3 
+# This is setup so that we can update the image stream and trigger an update on the version
+# Notice that the options are based on a jib build, as per https://github.com/GoogleContainerTools/jib/blob/master/docs/faq.md#how-do-i-set-parameters-for-my-image-at-runtime
+oc create is recommendation-v3 -n $PROJECT_NAME
+oc import-image recommendation-v3 --from=quay.io/mhildenb/sm-demo-recommendation:v3 --reference-policy=local --confirm=true -n $PROJECT_NAME
+oc new-app recommendation-v3 -l app=recommendation,version=v3,app.kubernetes.io/part-of=Recommendation \
+    -e JAVA_TOOL_OPTIONS="-Xdebug -Xrunjdwp:transport=dt_socket,address=5000,server=y,suspend=n" -n $PROJECT_NAME
+oc expose svc recommendation-v3 -n $PROJECT_NAME
 
 oc apply -f $DEMO_HOME/kube/recommendation/Service.yml  -n $PROJECT_NAME
 
