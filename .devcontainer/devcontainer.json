@@ -22,7 +22,8 @@
 		"joaompinto.asciidoctor-vscode",
 		"redhat.vscode-quarkus",
 		"ggrebert.quarkus-snippets",
-		"humao.rest-client"
+		"humao.rest-client",
+		"ms-kubernetes-tools.vscode-kubernetes-tools"
 	],
 	"settings":{
 		"java.home": "/usr/lib/jvm/java-11-openjdk",
