@@ -1,0 +1,80 @@
+# WARNING: DO NOT kubectl apply -f this file directly.  It first needs variable substitution like so:
+# sed "s/demo-dev/$dev_prj/g" $DEMO_HOME/kube/tekton/pipelines/fraud-model-dev-pipeline.yaml | sed "s/demo-cicd/$cicd_prj/g" | oc apply -f - -n $cicd_prj
+# where dev_prj is set to point to your dev project and cicd_prj is set to point to your cicd project
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: maven-jib-pipeline
+spec:
+  workspaces:
+  - name: local-workspace
+  params:
+    - name: GIT_REPO
+      type: string
+      description: The repo to check output
+      default: 'http://gitea:3000/gogs/demo-microservices.git'
+    - name: GIT_REVISION
+      type: string
+      description: The branch to be built
+      default: 'master'
+    - name: GIT_MESSAGE
+      type: string
+      description: The commit message of the triggered build (if any)
+      default: "<none>"
+    - name: PATH_CONTEXT
+      type: string
+      description: Where the code is relative to the start of the GIT_REPO
+      default: "."
+    - name: CACHE_VOLUME
+      description: "OPTIONAL: The name of a volume where cached build and image artefacts are stored."
+      default: empty-dir-volume
+    - name: DEPLOY_NAME
+      description: The name of the deployment to roll out to after image is updated
+  resources:
+  - name: app-image
+    type: image
+  tasks:
+  - name: checkout
+    taskRef:
+      name: internal-git-clone
+      kind: ClusterTask
+    workspaces:
+    - name: workvol
+      workspace: local-workspace
+    params:
+    - name: url
+      value: $(params.GIT_REPO)
+    - name: revision
+      value: $(params.GIT_REVISION)
+    - name: message
+      value: $(params.GIT_MESSAGE)
+    # by setting subdirectory parameters to ""
+    # checkout will clone to the root of the local-workspace
+    # volume, which will allow other tasks to find this directory
+    # at their name for the mount point
+    - name: subdirectory
+      value: "source"
+    - name: deleteExisting
+      value: "true"
+    - name: submodules
+      value: "false"
+  - name: build-image
+    taskRef:
+      kind: ClusterTask
+      name: jib-maven
+    runAfter:
+      - checkout
+    params:
+    - name: DIRECTORY
+      value: source/$(params.PATH_CONTEXT)
+    - name: CACHE
+      value: $(params.CACHE_VOLUME)
+    - name: INSECUREREGISTRY
+      value: "true"
+    resources:
+      outputs:
+      - name: image
+        resource: app-image
+    workspaces:
+    - name: source
+      workspace: local-workspace

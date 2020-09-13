@@ -29,13 +29,38 @@ while [[ "$(oc get ns ${PROJECT_NAME} 2>/dev/null)" ]]; do
     sleep 1
 done
 
-# pre-reqs
-# oc adm policy add-scc-to-group anyuid system:authenticated
-
-oc new-project $PROJECT_NAME --display-name='Service Mesh Demo Project'
 oc get ns ${CICD_PRJ} 2>/dev/null || {
     oc new-project ${CICD_PRJ}
 }
+
+oc new-project $PROJECT_NAME --display-name='Service Mesh Demo Project'
+
+echo "Installing tekton components"
+declare TKN_FOLDERS=( "volumes" "tasks" "triggers" "pipelines" )
+for FOLDER in "${TKN_FOLDERS[@]}"; do
+    oc apply -n $CICD_PRJ -R -f "${DEMO_HOME}/kube/tekton/${FOLDER}"
+done
+
+# make sure the CICD pipeline account can edit the main project 
+# FIXME: Currently set to edit for deployment, but might only really need registry-edit 
+# if it's just updating the internal registry
+oc adm policy add-role-to-user edit -n $PROJECT_NAME system:serviceaccount:${CICD_PRJ}:pipeline
+
+echo "Initiatlizing git repository in gitea and configuring webhooks"
+oc apply -f $DEMO_HOME/kube/gitea/gitea-server-cr.yaml -n $CICD_PRJ
+oc wait --for=condition=Running Gitea/gitea-server -n $CICD_PRJ --timeout=2m
+echo -n "Waiting for gitea deployment to appear..."
+while [[ -z "$(oc get deploy gitea -n $CICD_PRJ 2>/dev/null)" ]]; do
+    echo -n "."
+    sleep 1
+done
+echo "done!"
+oc rollout status deploy/gitea -n $CICD_PRJ
+
+echo "Initializing gitea"
+oc create -f $DEMO_HOME/kube/gitea/gitea-init-taskrun.yaml -n $CICD_PRJ
+tkn tr logs -L -f -n ${CICD_PRJ}
+
 #
 # Customer 
 #
@@ -82,17 +107,3 @@ oc apply -f $DEMO_HOME/kube/recommendation/Service.yml  -n $PROJECT_NAME
 # open a route for demonstration purposes
 oc expose svc recommendation -n $PROJECT_NAME
 
-echo "Initiatlizing git repository in gitea and configuring webhooks"
-oc apply -f $DEMO_HOME/kube/gitea/gitea-server-cr.yaml -n $CICD_PRJ
-oc wait --for=condition=Running Gitea/gitea-server -n $CICD_PRJ --timeout=2m
-echo -n "Waiting for gitea deployment to appear..."
-while [[ -z "$(oc get deploy gitea -n $CICD_PRJ 2>/dev/null)" ]]; do
-    echo -n "."
-    sleep 1
-done
-echo "done!"
-oc rollout status deploy/gitea -n $CICD_PRJ
-
-echo "Initializing gitea"
-oc create -f $DEMO_HOME/kube/gitea/gitea-init-taskrun.yaml -n $CICD_PRJ
-tkn tr logs -L -f -n ${CICD_PRJ}

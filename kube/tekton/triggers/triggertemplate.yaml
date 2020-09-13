@@ -1,0 +1,57 @@
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: model-trigger-template
+spec:
+  params:
+  - name: gitrevision
+    description: The git revision
+    default: master
+  - name: gitrepositoryurl
+    description: The git repository url
+  - name: message
+    description: The message to print
+    default: This is the default message
+  - name: contenttype
+    description: The Content-Type of the event
+  resourcetemplates:
+  - apiVersion: tekton.dev/v1beta1
+    kind: PipelineRun
+    metadata:
+      generateName: maven-jib-pipeline-gitea-triggered-run-
+      labels:
+        tekton.dev/pipeline: maven-jib-pipeline
+    spec:
+      pipelineRef:
+        name: maven-jib-pipeline
+      params:
+      - name: GIT_REPO
+        value: $(params.gitrepositoryurl)
+      - name: GIT_REVISION
+        value: $(params.gitrevision)
+      - name: GIT_MESSAGE
+        value: $(params.message)
+      - name: CACHE_VOLUME
+        value: cache-vol
+      - name: DEPLOY_NAME
+        value: "recommendation-v3"
+      - name: PATH_CONTEXT
+        value: "recommendation/java/quarkus"
+      resources:
+      - name: app-image
+        resourceSpec:
+          type: image
+          params:
+          - name: url
+            value: image-registry.openshift-image-registry.svc:5000/demo-app/recommendation-v3
+      workspaces:
+      - name: local-workspace
+        persistentVolumeClaim:
+          claimName: workvol-pvc
+      podTemplate:
+        volumes:
+        - name: cache-vol
+          persistentVolumeClaim:
+            claimName: cache-pvc
+      timeout: 1h0m0s
