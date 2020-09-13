@@ -23,8 +23,8 @@ spec:
       containers:
       - env:
         - name: JAVA_OPTIONS
-          value: -Xms15m -Xmx15m -Xmn15m -Xrunjdwp:transport=dt_socket,address=5000,server=y,suspend=n
-        image: docker.io/mhildema/recommendation:v2-buggy
+          value: -Xrunjdwp:transport=dt_socket,address=5000,server=y,suspend=n
+        image: quay.io/mhildenb/sm-demo-recommendation:v2-buggy
         imagePullPolicy: Always
         # livenessProbe:
         #   exec:
