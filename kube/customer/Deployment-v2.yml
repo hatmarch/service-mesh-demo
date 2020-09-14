@@ -23,7 +23,7 @@ spec:
       containers:
       - env:
         name: customer
-        image: docker.io/mhildema/customer-dotnet:latest
+        image: quay.io/mhildenb/sm-demo-customer:v2
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
