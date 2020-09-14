@@ -24,8 +24,8 @@ spec:
       - env:      
         - name: JAVA_OPTIONS
           value: -Xrunjdwp:transport=dt_socket,address=5000,server=y,suspend=n
-#        image: quay.io/rhdevelopers/istio-tutorial-preference:latest
-        image: docker.io/mhildema/preference:v1
+        image: quay.io/rhdevelopers/istio-tutorial-preference:latest
+#        image: docker.io/mhildema/preference:v1
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
