@@ -99,7 +99,10 @@ oc apply -f $DEMO_HOME/kube/recommendation/Deployment-v2-buggy-only.yml -n $PROJ
 oc create is recommendation-v3 -n $PROJECT_NAME
 oc import-image recommendation-v3 --from=quay.io/mhildenb/sm-demo-recommendation:v3 --reference-policy=local --confirm=true -n $PROJECT_NAME
 oc new-app recommendation-v3 -l app=recommendation,version=v3,app.kubernetes.io/part-of=Recommendation \
-    -e JAVA_TOOL_OPTIONS="-Xdebug -Xrunjdwp:transport=dt_socket,address=5000,server=y,suspend=n" -n $PROJECT_NAME
+    -e JAVA_TOOL_OPTIONS="-Xdebug -Xrunjdwp:transport=dt_socket,address=5000,server=y,suspend=n" -n $PROJECT_NAME \
+sleep 1
+# ensure sidecar injection
+oc patch deploy/recommendation-v3 --patch '{"spec":{"template":{"metadata":{"annotations": { "sidecar.istio.io/inject":"true" }}}}}'
 oc expose svc recommendation-v3 -n $PROJECT_NAME
 
 oc apply -f $DEMO_HOME/kube/recommendation/Service.yml  -n $PROJECT_NAME
