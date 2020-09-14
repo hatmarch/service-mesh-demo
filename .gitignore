@@ -18,8 +18,8 @@ svm.jar
 .springBeans
 
 ### dotnet core ###
-customer/dotnet/obj/*
-customer/dotnet/bin/*
+obj/
+bin/
 
 ### OpenShift do ###
 .odo/
