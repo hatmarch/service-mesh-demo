@@ -21,12 +21,15 @@ spec:
         sidecar.istio.io/inject: "true"
     spec:
       containers:
-      - env:
+      - name: customer
+        image: quay.io/mhildenb/sm-demo-customer:v2
+        # image: quay.io/rhdevelopers/istio-tutorial-customer:v1
+        imagePullPolicy: Always
+        env:
         - name: JAVA_OPTIONS
-          value: -Xms15m -Xmx15m -Xmn15m -Xrunjdwp:transport=dt_socket,address=5000,server=y,suspend=n
-        name: customer
-        image: quay.io/rhdevelopers/istio-tutorial-customer:v1
-        imagePullPolicy: IfNotPresent
+          value: -Xrunjdwp:transport=dt_socket,address=5000,server=y,suspend=n
+        - name: DESTINATION_SERVICE
+          value: PreferenceService
         ports:
         - containerPort: 8080
           name: http

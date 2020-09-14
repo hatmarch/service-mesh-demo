@@ -21,10 +21,14 @@ spec:
         sidecar.istio.io/inject: "true"
     spec:
       containers:
-      - env:
-        name: customer
+      - name: customer
         image: quay.io/mhildenb/sm-demo-customer:v2
         imagePullPolicy: Always
+        env:
+        - name: JAVA_OPTIONS
+          value: -Xrunjdwp:transport=dt_socket,address=5000,server=y,suspend=n
+        - name: DESTINATION_SERVICE
+          value: RecommendationService
         ports:
         - containerPort: 8080
           name: http
