@@ -68,7 +68,7 @@ tkn tr logs -L -f -n ${CICD_PRJ}
 oc apply -f $DEMO_HOME/kube/customer/Deployment.yml -n $PROJECT_NAME
 
 # version 2
-oc apply -f $DEMO_HOME/kube/customer/kube/customer/Deployment-v2.yml -n $PROJECT_NAME
+oc apply -f $DEMO_HOME/kube/customer/Deployment-v2.yml -n $PROJECT_NAME
 
 # uncomment for a dotnet version of customer v2
 # oc apply -f $DEMO_HOME/kube/customer/Deployment-v2-dotnet-customer.yml -n $PROJECT_NAME
