@@ -37,7 +37,7 @@ code .
 
 == Full Demo Setup
 
-Follow the following steps to be able to run link:walkthrough/full-demo-walkthrough.adoc[this walkthrough].  These instructions were tested with OpenShift 4.4 and follow the instructions that can be found link:https://docs.openshift.com/container-platform/4.4/service_mesh/service_mesh_install/installing-ossm.html[here]
+Follow the following steps to be able to run link:walkthrough/walkthrough.adoc[this walkthrough].  These instructions were tested with OpenShift 4.4 and follow the instructions that can be found link:https://docs.openshift.com/container-platform/4.4/service_mesh/service_mesh_install/installing-ossm.html[here]
 
 image:walkthrough/images/istio-versions-ossm-1.1.1.1.png[]
 
