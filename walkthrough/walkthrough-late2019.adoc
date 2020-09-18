@@ -6,10 +6,21 @@
 
 include:includes/common.adoc[]
 
-[Pre-requisites]
+[IMPORTANT]
 ====
-Make sure to follow the setup instructions in the link:../readme.adoc[readme.adoc]
+Before attempting this run through be sure to:
 
+. Be sure to setup the demo per link:../readme.adoc[README]
+. Open a shell and navigate to the root of this repo
+. Run the following command
++
+----
+docker run -it -v ~/.kube:/home/jboss/.kube -v ~/.oh-my-zsh:/home/jboss/.oh-my-zsh -v $(pwd):/projects/sm-demo quay.io/mhildenb/dev-demo-shell:latest /bin/zsh
+# You should enter the container in the projects directory
+cd /projects/sm-demo
+. scripts/shell-setup.sh
+PROJECT_PREFIX=demo-app
+----
 ====
 
 Window Setup: Visible
@@ -574,6 +585,23 @@ $DEMO_HOME/scripts/project-load-gen.sh customer --istio -h "User-Agent: Pretend 
 image:images/test-web.png[]
 
 == Troubleshooting
+
+=== Upstream connect error (and policies)
+
+If you *apply the security policies* and you see this error in certain situations
+----
+customer => Error: 503 - upstream connect error or disconnect/reset before headers. reset reason: connection termination
+----
+
+It might be due to a kubernetes service not naming a port properly.  You might try `istioctl validate` to the service in question and see what you get back.  For instance:
+
+----
+$ kubectl get services -o yaml |istioctl validate -i demo-app-istio-system -f -
+Error: 1 error occurred:
+        * List//: service "recommendation-v3/demo-app/:" port "8080-tcp" does not follow the Istio naming convention. See https://istio.io/docs/setup/kubernetes/prepare/requirements/
+----
+
+This can be fixed by naming the port in question `http`
 
 === Debugging with Istioctl
 
