@@ -105,7 +105,15 @@ oc new-app recommendation-v3 -l app=recommendation,version=v3,app.kubernetes.io/
     -e JAVA_TOOL_OPTIONS="-Xdebug -Xrunjdwp:transport=dt_socket,address=5000,server=y,suspend=n" -n $PROJECT_NAME
 sleep 1
 # ensure sidecar injection
-oc patch deploy/recommendation-v3 --patch '{"spec":{"template":{"metadata":{"annotations": { "sidecar.istio.io/inject":"true" }}}}}'
+oc patch deploy/recommendation-v3 -n $PROJECT_NAME --patch '{"spec":{"template":{"metadata":{"annotations": { "sidecar.istio.io/inject":"true" }}}}}'
+
+# rename port 8080 as http to conform with what istio is looking for around policy enforcement.  If this is not done,
+# kubectl get service recommendation-v3 -o yaml | istioctl validate -i demo-app-istio-system -f -  
+# returns the following error
+#Error: 1 error occurred:
+#        * List//: service "recommendation-v3/demo-app/:" port "8080-tcp" does not follow the Istio naming convention. See https://istio.io/docs/setup/kubernetes/prepare/requirements/
+oc patch svc recommendation-v3 -n $PROJECT_NAME --type json -p='[{"op": "replace", "path": "/spec/ports/0/name", "value":"http"}]'
+
 oc expose svc recommendation-v3 -n $PROJECT_NAME
 
 oc apply -f $DEMO_HOME/kube/recommendation/Service.yml  -n $PROJECT_NAME
