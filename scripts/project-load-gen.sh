@@ -7,6 +7,7 @@ declare PROJECT_NAME="demo-app"
 declare ROUTE=""
 declare ISTIO_ROUTE=""
 declare HEADER_ARGS=""
+declare QUERY_STRING=""
 
 while (( "$#" )); do
     case "$1" in
@@ -20,6 +21,10 @@ while (( "$#" )); do
             ;;
         -h|--header)
             HEADER_ARGS=$2
+            shift 2
+            ;;
+        -q|--querystring)
+            QUERY_STRING=$2
             shift 2
             ;;
         -*|--*)
@@ -41,11 +46,23 @@ if [ -z "$ROUTE" ]; then
 fi
 
 call_curl() {
-    if [[ "$HEADER_ARGS" ]]; then
-        curl -H "${HEADER_ARGS}" $1
-    else
-        curl $1
+    local url=$1
+    local header_frag=""
+    local querystr_frag=""
+
+    if [[ -n "${HEADER_ARGS}" ]]; then
+        header_frag=" --header \"$(echo ${HEADER_ARGS})\""
     fi
+
+    if [[ -n "${QUERY_STRING}" ]]; then
+        querystr_frag="?${QUERY_STRING}"
+    fi
+
+    #    #?user_key=e725ea28683dbf46b1a3d038f59c3bf6"
+
+ #   set -x
+    eval "curl $header_frag ${url}${querystr_frag}"
+ #   set +x
 }
 
 
