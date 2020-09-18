@@ -35,21 +35,42 @@ code .
 
 . Then follow the demo setup instructions using the VS Code terminal (which will be running in the container)
 
-== Demo Setup
+== Full Demo Setup
 
 Follow the following steps to be able to run link:walkthrough/full-demo-walkthrough.adoc[this walkthrough].  These instructions were tested with OpenShift 4.4 and follow the instructions that can be found link:https://docs.openshift.com/container-platform/4.4/service_mesh/service_mesh_install/installing-ossm.html[here]
 
 image:walkthrough/images/istio-versions-ossm-1.1.1.1.png[]
 
-[NOTE]
-====
-If you're really in a hurry, you can run all these commands at once using the following (allow about 5 minutes for the whole thing to complete)
-
 ----
 source scripts/shell-setup.sh
 $DEMO_HOME/scripts/setup-full-demo.sh
 ----
-====
+
+=== Optional: 3Scale Adaptor Setup
+
+You can integrate 3Scale into the demo by doing the following after setting up the initial demo
+
+. Install the full demo
+. Update the Service Mesh Control Place for demo-app and turn on 3Scale Adaptor
+. Install the 3scale per link:https://github.com/tnscorcoran/istio-3scale#3scale-setup-instructions[this section] of instructions with these caveats
+** Control plane is already setup.  Don't create a new one.  You have already enabled what is necessary in the previous step
+** Whenever the instructions reference `istio-system`, replace this with where your control plane is installed (e.g. `demo-app-istio-system`)
+** Don't install the bookinfo app.  Instead we'll apply everything to the demo-app
+. Pickup the instructions after the Bookinfo stuff link:https://github.com/tnscorcoran/istio-3scale#apply-3scale-api-management-to-bookinfo[here] to configure 3Scale and Istio with these provisos:
+** Whenever the instructions reference `istio-system`, replace this with where your control plane is installed (e.g. `demo-app-istio-system`)
+** Instead of labelling the `productpage-v1`, patch all deployments that can be routed to by the istio-gateway in our demo app (i.e. `customer` deployment AND `customer-v2` deployment)
+. [red]#Finally, any call you make to the istio system gateway needs to include the `user_key` as specified in the instructions#
+** Failure to do so will generate internal `403` errors as the 3scale isito adaptor won't be able to talk to istio
+** You can provide this to the loadgen call by using the `-q` flag
++
+----
+# NOTE: API_KEY assumed to be set to the 3Scale API App associated with the mesh
+$DEMO_HOME/scripts/project-load-gen.sh customer --istio -q "user_key=${API_KEY}"
+----
+
+== Piecemeal Demo Setup
+
+If you're wanting to take a slower approach toward setting up the ServiceMesh (such as observing the services before they are part of the mesh), then follow the instructions below.
 
 . First ensure your shell environment is setup correctly
 +
