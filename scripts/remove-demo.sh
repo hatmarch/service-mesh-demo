@@ -88,7 +88,7 @@ if [[ "${REMOVE_OPERATORS}" ]]; then
         remove-operator ${OPERATOR} || true
     done
 
-    remove-operator elastic-search openshift-operators-redhat || true
+    remove-operator elastic-search || true
 
     declare CRDS=(maistra jaeger kiali elasticsearch)
     for CRD in "${CRDS[@]}"; do

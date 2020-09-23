@@ -35,11 +35,16 @@ while true; do
 
     # appears 
     # echo "progress: ${COMPONENT_COUNT}"
+    echo -n "."
     sleep 5
+
 done
+echo "done."
+
+# give the mesh setup time to settle before we change the config map
+sleep 5
 
 # Policy checks are disabled by default.  We need to turn them on to allow the Security policy checks to work
 # NOTE: Istio will eventually notice this change by itself.  No redeploy is necessary
 oc get cm istio -n ${ISTIO_PRJ} -o yaml | sed "s/disablePolicyChecks: true/disablePolicyChecks: false/g" | oc apply -n ${ISTIO_PRJ} -f -
 
-echo "done."
