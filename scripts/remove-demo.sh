@@ -70,12 +70,6 @@ declare CICD_PRJ="${PROJECT_NAME}-cicd"
 # NOTE: before deleting any project involving istio, the ServiceMeshControlPlane must first be deleted, as per here: https://access.redhat.com/solutions/4597081
 oc delete smcp --all -n $ISTIO_PRJ
 
-# Delete all the projects
-declare PROJECTS=( ${PROJECT_NAME} ${ISTIO_PRJ} ${CICD_PRJ} )
-for PROJECT in "${PROJECTS[@]}"; do
-    oc get ns ${PROJECT} 2>/dev/null && oc delete project ${PROJECT}
-done
-
 if [[ "${REMOVE_OPERATORS}" ]]; then
 
     echo "Removing Gitea Operator"
@@ -90,11 +84,19 @@ if [[ "${REMOVE_OPERATORS}" ]]; then
 
     remove-operator elastic-search || true
 
+fi
+
+# Delete all the projects
+declare PROJECTS=( ${PROJECT_NAME} ${ISTIO_PRJ} ${CICD_PRJ} )
+for PROJECT in "${PROJECTS[@]}"; do
+    oc get ns ${PROJECT} 2>/dev/null && oc delete project ${PROJECT}
+done
+
+if [[ "${REMOVE_OPERATORS}" ]]; then
     declare CRDS=(maistra jaeger kiali elasticsearch)
     for CRD in "${CRDS[@]}"; do
         remove-crds ${CRD} || true
     done
-
 fi
 
 declare PROXY_PID=""
