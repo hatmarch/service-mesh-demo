@@ -19,7 +19,7 @@
 	"extensions": [
 		"vscjava.vscode-java-pack",
 		"redhat.vscode-xml",
-		"joaompinto.asciidoctor-vscode",
+		"asciidoctor.asciidoctor-vscode",
 		"redhat.vscode-quarkus",
 		"ggrebert.quarkus-snippets",
 		"humao.rest-client",

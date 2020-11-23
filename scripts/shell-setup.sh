@@ -58,3 +58,5 @@ aws-down() {
 
 alias cds="cd ${DEMO_HOME}/scripts"
 alias cdh='cd ${DEMO_HOME}'
+
+echo "Welcome to the Service Mesh Demo.  DEMO_HOME is $DEMO_HOME"
