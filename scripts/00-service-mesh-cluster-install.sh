@@ -43,10 +43,10 @@ cat <<EOF | oc apply -f -
 apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
-  name: openshift-pipelines-operator
+  name: openshift-pipelines-operator-rh
   namespace: openshift-operators
 spec:
-  channel: preview
+  channel: ocp-4.6
   name: openshift-pipelines-operator-rh
   source: redhat-operators
   sourceNamespace: openshift-marketplace
@@ -76,9 +76,14 @@ declare -r ISTIO_PRJ="${PROJECT_NAME}-istio-system"
 echo "Creating new istio control plane project at $ISTIO_PRJ"
 oc get ns $ISTIO_PRJ 2>/dev/null  || { 
     # FIXME: When created as a project an incompatible limit range is applied to it
-    # oc new-project $ISTIO_PRJ --display-name="Service Mesh Control Plane for $PROJECT_NAME"
+    oc new-project $ISTIO_PRJ --display-name="Service Mesh Control Plane for $PROJECT_NAME"
 
-    oc create ns $ISTIO_PRJ
+    echo "Scanning for incompatible LimitRange"
+    sleep 2
+    if [[ -n "$(oc get limitrange -n $ISTIO_PRJ 2>/dev/null)" ]]; then
+        echo "Removing Limit Ranges"
+        oc delete limitrange --all -n $ISTIO_PRJ
+    fi
 }
 
 # subscribe to service mesh operator (in all projects, does not support per project installation)
