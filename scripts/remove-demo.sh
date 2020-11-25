@@ -86,7 +86,7 @@ if [[ "${REMOVE_OPERATORS}" ]]; then
     oc delete clusterrole gitea-operator || true
     remove-crds gitea || true
 
-    declare OPERATORS=( servicemesh jaeger kiali openshift-pipelines-operator )
+    declare OPERATORS=( servicemesh jaeger kiali openshift-pipelines-operator-rh )
     for OPERATOR in "${OPERATORS[@]}"; do
         remove-operator ${OPERATOR} || true
     done
@@ -103,7 +103,7 @@ if [[ "${REMOVE_OPERATORS}" ]]; then
     oc delete clusterrole/istio-admin clusterrole/istio-cni clusterrolebinding/istio-cni
 
     # declare CRDS=(maistra jaeger kiali elasticsearch)
-    declare CRDS=( '.*\.istio\.io' '.*\.maistra\.io' '.*\.kiali\.io' )
+    declare CRDS=( '.*\.istio\.io' '.*\.maistra\.io' '.*\.kiali\.io' '.*\.tekton\.dev' )
     for CRD in "${CRDS[@]}"; do
         remove-crds ${CRD} || true
     done
