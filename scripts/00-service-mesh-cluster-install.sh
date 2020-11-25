@@ -75,7 +75,10 @@ oc rollout status deploy/gitea-operator -n $giteaop_prj
 declare -r ISTIO_PRJ="${PROJECT_NAME}-istio-system"
 echo "Creating new istio control plane project at $ISTIO_PRJ"
 oc get ns $ISTIO_PRJ 2>/dev/null  || { 
-    oc new-project $ISTIO_PRJ --display-name="Service Mesh Control Plane for $PROJECT_NAME"
+    # FIXME: When created as a project an incompatible limit range is applied to it
+    # oc new-project $ISTIO_PRJ --display-name="Service Mesh Control Plane for $PROJECT_NAME"
+
+    oc create ns $ISTIO_PRJ
 }
 
 # subscribe to service mesh operator (in all projects, does not support per project installation)

@@ -27,4 +27,4 @@ $SCRIPT_DIR/01-provision-service-mesh.sh -p $PROJECT_NAME
 $SCRIPT_DIR/02-project-no-service-mesh-setup.sh -p $PROJECT_NAME
 $SCRIPT_DIR/03-project-apply-service-mesh.sh -p $PROJECT_NAME
 
-echo "Done!"
+echo "Demo installation progressed successfully!"

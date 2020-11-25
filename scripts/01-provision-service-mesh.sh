@@ -27,16 +27,7 @@ declare -r ISTIO_PRJ="${PROJECT_NAME}-istio-system"
 oc apply -f ${DEMO_HOME}/istiofiles/install/service-mesh.yaml -n $ISTIO_PRJ
 
 echo "Waiting for Service Mesh Control Plane to be ready..."
-while true; do
-    COMPONENT_COUNT="$(oc get smcp/basic-install -n ${ISTIO_PRJ} -o jsonpath='{.status.annotations.readyComponentCount}' 2>/dev/null)"
-    if [[ "${COMPONENT_COUNT}" == "9/9" ]]; then
-        break;
-    fi
-
-    # appears 
-    # echo "progress: ${COMPONENT_COUNT}"
-    sleep 5
-done
+oc wait --for=condition=Ready smcp/basic-install --timeout 6m -n $ISTIO_PRJ
 
 # Policy checks are disabled by default.  We need to turn them on to allow the Security policy checks to work
 # NOTE: Istio will eventually notice this change by itself.  No redeploy is necessary
