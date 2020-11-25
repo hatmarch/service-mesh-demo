@@ -70,6 +70,9 @@ declare CICD_PRJ="${PROJECT_NAME}-cicd"
 # NOTE: before deleting any project involving istio, the ServiceMeshControlPlane must first be deleted, as per here: https://access.redhat.com/solutions/4597081
 oc delete smcp --all -n $ISTIO_PRJ
 
+# The cleanup can get stuck on the deletion of the kiali dashboard
+oc delete kiali --all -n $ISTIO_PRJ
+
 # Delete all the projects
 declare PROJECTS=( ${PROJECT_NAME} ${ISTIO_PRJ} ${CICD_PRJ} )
 for PROJECT in "${PROJECTS[@]}"; do
@@ -90,7 +93,17 @@ if [[ "${REMOVE_OPERATORS}" ]]; then
 
     remove-operator elastic-search openshift-operators-redhat || true
 
-    declare CRDS=(maistra jaeger kiali elasticsearch)
+    # Clean up specific webhooks 
+    # per https://docs.openshift.com/container-platform/4.6/service_mesh/v2x/installing-ossm.html#ossm-remove-cleanup_installing-ossm
+    OPERATOR_PROJECT="openshift-operators"
+    oc delete validatingwebhookconfiguration/${OPERATOR_PROJECT}.servicemesh-resources.maistra.io
+    oc delete mutatingwebhookconfigurations/${OPERATOR_PROJECT}.servicemesh-resources.maistra.io
+    oc delete -n ${OPERATOR_PROJECT} daemonset/istio-node
+
+    oc delete clusterrole/istio-admin clusterrole/istio-cni clusterrolebinding/istio-cni
+
+    # declare CRDS=(maistra jaeger kiali elasticsearch)
+    declare CRDS=( '.*\.istio\.io' '.*\.maistra\.io' '.*\.kiali\.io' )
     for CRD in "${CRDS[@]}"; do
         remove-crds ${CRD} || true
     done
