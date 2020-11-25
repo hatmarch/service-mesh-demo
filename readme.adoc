@@ -154,6 +154,34 @@ If you want to keep operators installed, use the `-k` flag.  If you are removing
 
 Sometimes a project finalizer can get stuck, in these cases you can re-run the command with the -f flag to force the removal of the project in question.
 
+=== Creating a new shell container
+
+As the underlying devcontainer is updated to include new versions of supporting tools, you may need to create new versions of the containers used to run the demo from a shell.  You can create a new shell easily.
+
+NOTE: if you want to create your own version of the container, update the quay.io repository info in the script
+
+. Clone the repo to a machine with docker (or equivalent) installed and change to the root of the repo 
+. Ensure that you are logged into quay.io (or whichever registry you'll be storing your container too)
+. Go into the `.devcontainer` directory that is just under the root of this repo
++
+----
+cd .devcontainer
+----
++
+. Run the following command 
++
+----
+# instead of 1.0 change to whatever tag you want to use
+DEMO_SHELL_TAG=1.0
+# This is an optional parameter, defaults to quay.io
+REGISTRY=quay.io
+# This is an optional parameter, defaults to mhildenb
+ACCOUNT=mhildenb
+./build-n-push-shell.sh ${DEMO_SHELL_TAG} ${REGISTRY} ${ACCOUNT}
+----
++
+. When the command is done, you will be able to access the following container for use: `${REGISTRY}/${ACCOUNT}/sm-demo-shell:latest`
+
 === Helpful `istioctl` commands
 
 For general information about istioctl (1.4), see the "Istioldie" documentation link:https://archive.istio.io/v1.4/docs/reference/commands/istioctl/[here]

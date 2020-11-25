@@ -12,14 +12,19 @@ Before attempting this run through be sure to:
 
 . Be sure to setup the demo per link:../readme.adoc[README]
 . Open a shell and navigate to the root of this repo
-. Run the following command
+. Run the following commandfootnote:[You can rebuild or create your own container for running the demo.  See "Creating a new shell container" of the link:..readme.adoc[README]]
 +
 ----
-docker run -it -v ~/.kube:/home/jboss/.kube -v ~/.oh-my-zsh:/home/jboss/.oh-my-zsh -v $(pwd):/projects/sm-demo quay.io/mhildenb/dev-demo-shell:latest /bin/zsh
-# You should enter the container in the projects directory
-cd /projects/sm-demo
-. scripts/shell-setup.sh
-PROJECT_PREFIX=demo-app
+docker run -it -v ~/.kube:/home/jboss/.kube -v ~/.oh-my-zsh:/home/jboss/.oh-my-zsh -v $(pwd):/workspaces/service-mesh-demo -w /workspaces/service-mesh-demo quay.io/mhildenb/sm-demo-shell:latest /bin/zsh
+----
++
+. If all ran successfully you should see the following:
++
+----
+DEMO_HOME is /workspaces/service-mesh-demo
+PROJECT_PREFIX is demo-app
+Welcome to the Service Mesh Demo.
+➜  service-mesh-demo git:(feature-sm2) ✗ 
 ----
 ====
 
@@ -116,7 +121,12 @@ image:images/kiali-initial-open.png[]
 [NOTE]
 .Get Jaeger Host
 ====
-You can get the jaeger host by issuing this command
+You can open Jaeger directly from Kiali using the `Distributed Tracing` link on the drawer on the left (as seen in image to the right)
+
+.Distributed Tracing link from Kiali
+image::images/dist-trace-link.png[300,392,role="right"]
+
+Alternatively you can get the jaeger host by issuing this command
 ----
 echo "https://$(oc get route jaeger -o=jsonpath='{.spec.host}' -n demo-app-istio-system)/"
 ----

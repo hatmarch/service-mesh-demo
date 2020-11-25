@@ -10,6 +10,7 @@ if [[ -z "${SCRIPT}" ]]; then
 fi
 
 export DEMO_HOME=$( cd "$(dirname "${SCRIPT}")/.." ; pwd -P )
+export PROJECT_PREFIX="demo-app"
 
 # shorthand for creating a pipeline run file and watching the logs
 pr () {
@@ -59,4 +60,6 @@ aws-down() {
 alias cds="cd ${DEMO_HOME}/scripts"
 alias cdh='cd ${DEMO_HOME}'
 
-echo "Welcome to the Service Mesh Demo.  DEMO_HOME is $DEMO_HOME"
+echo "DEMO_HOME is $DEMO_HOME"
+echo "PROJECT_PREFIX is $PROJECT_PREFIX"
+echo "Welcome to the Service Mesh Demo."
