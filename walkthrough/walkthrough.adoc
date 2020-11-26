@@ -433,13 +433,13 @@ NOTE: This is demonstrated best when all traffic is routed only to v1 of the cus
 . Review the file and then apply it to the cluster
 +
 ----
-oc apply -f $DEMO_HOME/istiofiles/virtual-service-recommendation-header.yml
+oc apply -f $DEMO_HOME/istiofiles/virtual-service-recommendation-header.yml -n $PROJECT_PREFIX
 ----
 +
 . [blue]#OPTIONAL:# Now you can show the audience what has just been setup using istioctl
 +
 ----
-istioctl x describe pod -i demo-app-istio-system $(oc get pods | grep -i recommendation-v3 | grep Running | awk '{print $1}')
+istioctl x describe pod -i $PROJECT_PREFIX-istio-system -n $PROJECT_PREFIX $(oc get pods -n $PROJECT_PREFIX | grep -i recommendation-v3 | grep Running | awk '{print $1}')
 ----
 +
 ** Successful output will look like this (if output doesn't match, then look to <<Debugging with Istioctl,Troubleshooting>> section)
@@ -465,7 +465,7 @@ VirtualService: recommendation
 You can also query at the service level to look at the overall service instead of what requests will be reaching the pod
 
 ----
-istioctl x describe svc recommendation -i demo-app-istio-system
+istioctl x describe svc recommendation -i $PROJECT_PREFIX-istio-system -n $PROJECT_PREFIX
 ----
 Generates this (slightly confusing) output:
 ----
