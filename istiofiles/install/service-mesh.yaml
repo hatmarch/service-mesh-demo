@@ -3,6 +3,8 @@ kind: ServiceMeshControlPlane
 metadata:
   name: basic-install
 spec:
+  policy:
+    type: Mixer
   addons:
     grafana:
       enabled: true
