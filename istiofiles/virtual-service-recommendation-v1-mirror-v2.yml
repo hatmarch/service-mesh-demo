@@ -1,4 +1,4 @@
-apiVersion: networking.istio.io/v1alpha3
+apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
   name: recommendation
@@ -13,8 +13,3 @@ spec:
     mirror:
       host: recommendation
       subset: version-v2
-    retries:
-      attempts: 3
-      perTryTimeout: 5s
-      retryOn: "506"
----
