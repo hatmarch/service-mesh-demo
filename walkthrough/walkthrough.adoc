@@ -277,19 +277,18 @@ $DEMO_HOME/scripts/project-load-gen.sh customer --istio
 ----
 cd $DEMO_HOME/microservices/recommendation/java/springboot
 mvn clean install
-oc new-build --name recommendation-v2 java:8 --binary -l app=recommendation,version=v3 -e JAVA_APP_JAR=recommendation.jar -n demo-app
-oc start-build recommendation-v2 --from-dir target --follow -n demo-app
+oc new-build --name recommendation-v2 java:11 --binary -l app=recommendation,version=v2 -e JAVA_APP_JAR=recommendation.jar  -e JAVA_TOOL_OPTIONS="-Xdebug -Xrunjdwp:transport=dt_socket,address=5005,server=y,suspend=n" -n $PROJECT_PREFIX
+oc start-build recommendation-v2 --from-dir target --follow -n $PROJECT_PREFIX
 ----
 +
 image::images/run_maven.png[]
 +
 . Discuss how this container could now be built
 ** Show the other Dockerfile that is NOT in .devcontainer
-. Now update the deployment to point to the newly created image in the local image registry
+. The deployment was already setup to point to the image stream to which we built.  We just need to delete the running pod to allow a new pod with the new image to replace it
 +
 ----
-# NOTE: Assumes PROJECT_PREFIX is set to the name of the project where this was built (e.g. `demo-app`)
-oc set image deploy/recommendation-v2 recommendation=image-registry.openshift-image-registry.svc:5000/$PROJECT_PREFIX/recommendation-v2:latest
+oc delete po -l app=recommendation,version=v2 -n $PROJECT_PREFIX
 ----
 
 ==== Meanwhile: Quick fix in production
