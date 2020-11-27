@@ -31,6 +31,6 @@ oc wait --for=condition=Ready smcp/basic-install --timeout 6m -n $ISTIO_PRJ
 
 # Policy checks are disabled by default.  We need to turn them on to allow the Security policy checks to work
 # NOTE: Istio will eventually notice this change by itself.  No redeploy is necessary
-oc get cm istio -n ${ISTIO_PRJ} -o yaml | sed "s/disablePolicyChecks: true/disablePolicyChecks: false/g" | oc apply -n ${ISTIO_PRJ} -f -
+oc get cm istio-basic-install -n ${ISTIO_PRJ} -o yaml | sed "s/disablePolicyChecks: true/disablePolicyChecks: false/g" | oc apply -n ${ISTIO_PRJ} -f -
 
 echo "done."
