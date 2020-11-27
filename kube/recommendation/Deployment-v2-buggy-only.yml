@@ -22,9 +22,10 @@ spec:
     spec:
       containers:
       - env:
-        - name: JAVA_OPTIONS
-          value: -Xrunjdwp:transport=dt_socket,address=5000,server=y,suspend=n
-        image: quay.io/mhildenb/sm-demo-recommendation:v2-buggy
+        - name: JAVA_TOOL_OPTIONS
+          value: -Xrunjdwp:transport=dt_socket,address=5005,server=y,suspend=n
+        # NOTE: This is replaced by sed
+        image: image-registry.openshift-image-registry.svc:5000/@PROJECT_NAME@/recommendation-v2
         imagePullPolicy: Always
         # livenessProbe:
         #   exec:
@@ -45,14 +46,14 @@ spec:
         - containerPort: 9779
           name: prometheus
           protocol: TCP
-        # readinessProbe:
-        #   exec:
-        #     command:
-        #     - curl
-        #     - localhost:8080/health          
-        #   initialDelaySeconds: 3
-        #   periodSeconds: 5
-        #   timeoutSeconds: 5
+        readinessProbe:
+          exec:
+            command:
+            - curl
+            - localhost:8080/     
+          initialDelaySeconds: 3
+          periodSeconds: 5
+          timeoutSeconds: 5
         securityContext:
           privileged: false
 ---
