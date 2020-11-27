@@ -105,12 +105,12 @@ customer => recommendation v1 from '5d978ff75b-dnbn7': 13636
 ====
 You can get the kiali host by issuing this command
 ----
-echo "https://$(oc get route kiali -o=jsonpath='{.spec.host}' -n demo-app-istio-system)/"
+echo "https://$(oc get route kiali -o=jsonpath='{.spec.host}' -n $PROJECT_PREFIX-istio-system)/"
 ----
 
 Or you can use istioctl to open up a port forward
 ----
-istioctl d kiali -i demo-app-istio-system
+istioctl d kiali -i $PROJECT_PREFIX-istio-system
 ----
 ====
 +
@@ -137,15 +137,10 @@ istioctl d jaeger -i demo-app-istio-system
 ----
 ====
 +
-. Put *"recommendation"* in the search box to get traces that end with it
-** NOTE: it is possible to do this through Kiali as well, using the "Distributed Tracing" tab
-image:images/jaeger-trace.png[]
+. Put `recommendation.demo-app` in the search box to get traces that end with it
 +
-OPTIONAL:
-====
-Show the link:https://kiali-istio-system.apps.service-mesh.openshifttc.com/console/istio?namespaces=demo-app[Istio Configuration from kiali] and reinforce the concepts of Gateways, VirtualServices, and Destination Rules.
-====
- 
+image:images/jaeger-trace.png[]
+
 == Resilence
 
 === Dark Release
@@ -159,7 +154,7 @@ image:images/recommendation-dark-release.png[]
 . Apply the changes to the cluster
 +
 ----
-oc apply -f $DEMO_HOME/istiofiles/virtual-service-recommendation-v1-mirror-v2.yml
+oc apply -f $DEMO_HOME/istiofiles/virtual-service-recommendation-v1-mirror-v2.yml -n $PROJECT_PREFIX
 virtualservice.networking.istio.io/recommendation configured
 ----
 +
@@ -168,13 +163,13 @@ virtualservice.networking.istio.io/recommendation configured
 . Open link:https://kiali-istio-system.apps.service-mesh.openshifttc.com/console/graph/namespaces/?edges=requestsPercentage&graphType=versionedApp&namespaces=demo-app&unusedNodes=true&injectServiceNodes=true&duration=60&pi=15000&layout=dagre[Kiali] and notice that error rate has gone to 0.
 +
 ----
-echo "https://$(oc get route kiali -o=jsonpath='{.spec.host}' -n demo-app-istio-system)/"
+echo "https://$(oc get route kiali -o=jsonpath='{.spec.host}' -n $PROJECT_PREFIX-istio-system)/"
 ----
 +
-. To see the actual mirrored calls, we need to look to link:https://jaeger-istio-system.apps.service-mesh.openshifttc.com/search?end=1573388314241000&limit=20&lookback=1h&maxDuration&minDuration&service=recommendation&start=1573384714241000[Jaeger] searching again for *recommendation*
+. To see the actual mirrored calls, we need to look to link:https://jaeger-istio-system.apps.service-mesh.openshifttc.com/search?end=1573388314241000&limit=20&lookback=1h&maxDuration&minDuration&service=recommendation&start=1573384714241000[Jaeger] searching again for `recommendation.demo-app`
 +
 ----
-istioctl d jaeger -i demo-app-istio-system
+istioctl d jaeger -i $PROJECT_PREFIX-istio-system
 ----
 +
 image:images/jaeger-dark-release.png[]
@@ -516,7 +511,7 @@ customer => Error: 503 - upstream connect error or disconnect/reset before heade
 It might be due to a kubernetes service not naming a port properly.  You might try `istioctl validate` to the service in question and see what you get back.  For instance:
 
 ----
-$ kubectl get services -o yaml |istioctl validate -i demo-app-istio-system -f -
+$ kubectl get services -o yaml |istioctl validate -i $PROJECT_PREFIX-istio-system -f -
 Error: 1 error occurred:
         * List//: service "recommendation-v3/demo-app/:" port "8080-tcp" does not follow the Istio naming convention. See https://istio.io/docs/setup/kubernetes/prepare/requirements/
 ----
@@ -527,7 +522,7 @@ This can be fixed by naming the port in question `http`
 
 You can look up route information by using the following command (where _recommendation-v3-5-jsxm9_ is the podname to which you want determine routes).  This output shows that there are none
 ----
-istioctl x describe pod -i demo-app-istio-system recommendation-v3-5-jsxm9
+istioctl x describe pod -i $PROJECT_PREFIX-istio-system recommendation-v3-5-jsxm9
 
 Pod: recommendation-v3-5-jsxm9
    Pod Ports: 8443 (recommendation-v3), 8778 (recommendation-v3), 8080 (recommendation-v3), 15090 (istio-proxy)
