@@ -164,13 +164,15 @@ virtualservice.networking.istio.io/recommendation configured
 echo "https://$(oc get route kiali -o=jsonpath='{.spec.host}' -n $PROJECT_PREFIX-istio-system)/"
 ----
 +
-. To see the actual mirrored calls, we need to look to link:https://jaeger-istio-system.apps.service-mesh.openshifttc.com/search?end=1573388314241000&limit=20&lookback=1h&maxDuration&minDuration&service=recommendation&start=1573384714241000[Jaeger] searching again for `recommendation.demo-app`
+. To prove that traffic is actually going to v2 of the service, select the deployment from the Topology View and then click on the `view logs` link next to the pod.
 +
-----
-istioctl d jaeger -i $PROJECT_PREFIX-istio-system
-----
-+
-image:images/jaeger-dark-release.png[]
+|===
+|Topology |Logs
+
+|image:images/topology-view.png[]
+|image:images/recommendation-logs.png[]
+
+|===
 
 === Remote Debugging
 
@@ -350,14 +352,15 @@ virtualservice.networking.istio.io/recommendation configured
 . Use `istioctl` to show how the route has been updated
 +
 ----
-istioctl x des service recommendation -i demo-app-istio-system
-
+istioctl x des service recommendation -i $PROJECT_PREFIX-istio-system -n $PROJECT_PREFIX
+----
++
+----
 Service: recommendation
    Port: http 8080/HTTP targets pod port 8080
 DestinationRule: recommendation for "recommendation"
    Matching subsets: version-v1,version-v2
    No Traffic Policy
-Pod is PERMISSIVE (enforces HTTP/mTLS) and clients speak HTTP
 VirtualService: recommendation
    Weight 75%
    Weight 25%
