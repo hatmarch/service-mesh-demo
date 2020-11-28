@@ -50,7 +50,7 @@ spec:
           exec:
             command:
             - curl
-            - localhost:8080/     
+            - localhost:8080/health     
           initialDelaySeconds: 3
           periodSeconds: 5
           timeoutSeconds: 5
