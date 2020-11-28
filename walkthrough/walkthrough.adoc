@@ -4,8 +4,6 @@
 
 = Service Mesh Demo [2020 Edition]
 
-include:includes/common.adoc[]
-
 [IMPORTANT]
 ====
 Before attempting this run through be sure to:
