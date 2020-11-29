@@ -13,7 +13,7 @@ Before attempting this run through be sure to:
 . Run the following commandfootnote:[You can rebuild or create your own container for running the demo.  See "Creating a new shell container" of the link:..readme.adoc[README]]
 +
 ----
-docker run -it -v ~/.kube:/home/jboss/.kube -v ~/.oh-my-zsh:/home/jboss/.oh-my-zsh -v $(pwd):/workspaces/service-mesh-demo -w /workspaces/service-mesh-demo quay.io/mhildenb/sm-demo-shell:latest /bin/zsh
+docker run -it -v ~/.kube:/home/jboss/.kube -v ~/.oh-my-zsh:/home/jboss/.oh-my-zsh -v $(pwd):/workspaces/service-mesh-demo -w /workspaces/service-mesh-demo quay.io/mhildenb/sm-demo-shell:1.1 /bin/zsh
 ----
 +
 . If all ran successfully you should see the following:
