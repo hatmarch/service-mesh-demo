@@ -375,49 +375,170 @@ image:images/kiali-recommendation-75-25.png[]
 
 Let's pretend that we discover that the customer service should never be calling the recommendation service directly.  We can enforce this by setting up access rules that ensure a given path through the system
 
-. In VSCode, use kbd:[CMD+p] and start searching for _acl-deny-except-customer2preference2recommendation.yml_.  Let's take a look at the file and highlight the areas below:
+=== Stopping all Traffic
+
+. Make sure requests are consistently coming into the mesh
++
+----
+$DEMO_HOME/scripts/project-load-gen.sh customer --istio
+----
++
+. In VSCode, use kbd:[CMD+p] and start searching for `authorization-policy-deny-all.yaml`
 +
 image:images/denier.png[]
 +
-. Now apply the changes to the mesh
+. Explain that this will effectively stop all traffic through the mesh.  Run the following command to apply it:
 +
 ----
-kubectl apply -f $DEMO_HOME/istiofiles/acl-deny-except-customer2preference2recommendation.yml -n $PROJECT_PREFIX
+kubectl apply -n $PROJECT_PREFIX -f $DEMO_HOME/istiofiles/authorization/authorization-policy-deny-all.yaml
 ----
 +
-. Errors should start to mount.  [red]#NOTE: It can take 30 seconds or more for policy to propagate through the mesh#
+. Switch to the shell and you should see evidence of the change
 +
-. Once errors start appearing in the load test, you can look deeper in Jaeger by searching for *istio-mixer*
+----
+RBAC: access deniedRBAC: access deniedRBAC: access deniedRBAC: access deniedRBAC: access denied
+----
++
+. Switch to Kiali and show that traffic through the mesh has effectively been halted with 100% of the traffic returning `HTTP 403`
++
+image:images/kiali-deny-all.png[]
+
+
+=== Reinstating Authorized flow to customer
+
+. Make sure loadgen is still running in the background
+. In VSCode, use kbd:[CMD+p] and start searching for `authorization-policy-allow-customer.yaml`
++
+image:images/auth-policy-allow-customer.png[]
++
+. Explain that this is stating that for any pod that matches the selector (namely `customer`) we will allow GET calls
+. With Kiali and the loadgen visible, apply the authorization policy
++
+----
+kubectl apply -n $PROJECT_PREFIX -f $DEMO_HOME/istiofiles/authorization/authorization-policy-allow-customer.yaml
+----
++
+. Show that calls to customer can now be made, but nothing else is going through:
++
+----
+customer => Error: 403 - RBAC: access denied
+customer => Error: 403 - RBAC: access denied
+customer => Error: 403 - RBAC: access denied
+----
++
+image:images/kiali-deny-preference.png[]
+
+=== Defining an approved path through the mesh
+
+. First we need to set the scenes for this.  From the topology view, take a closer look at one of the customer service pods (Deployment->Resources->Pod->YAML)
++
+image:images/customer-service-account.png[]
++
+. Point out that it is running as a service account called "customer". This will feed into information about a *prinicpal*.  Principals are only valid when running something like mTLS
++
+. In VSCode, use kbd:[CMD+p] and start searching for `authorization-policy-allow-preference.yaml`
++
+. Point out the highlighted parts of the preference authorization
++
+image:images/preference-authorization.png[]
++
+. Show the same for recommendation, kbd:[CMD+p] `authorization-policy-allow-recommendation.yaml` (explaining that preference is running on a service account also based on that name)
++
+image:images/recommendation-authorization.png[]
++
+. Point out that there is no authorization in recommendation for the `customer` service account to call it, only `preference`
+. Now apply all the changes to the mesh to enforce our policy (this will create or reapply all the files we've shown to this point)
++
+----
+kubectl apply -n $PROJECT_PREFIX -f $DEMO_HOME/istiofiles/authorization
+----
++
+. Reasonably soon after applying the yaml, output from the shell should show this too:
++
+----
+customer => preference => recommendation v1 from '6669f7c6b8-l6tv5': 1260
+customer => Error: 403 - RBAC: access denied
+customer => Error: 403 - RBAC: access denied
+customer => Error: 403 - RBAC: access denied
+customer => preference => recommendation v1 from '6669f7c6b8-l6tv5': 1261
+customer => preference => recommendation v2-buggy from '559c797886-hz28k'.
+customer => Error: 403 - RBAC: access denied
+customer => preference => recommendation v2-buggy from '559c797886-hz28k'.
+customer => Error: 403 - RBAC: access denied
+customer => preference => recommendation v1 from '6669f7c6b8-l6tv5': 1262
+customer => Error: 403 - RBAC: access denied
+customer => preference => recommendation v1 from '6669f7c6b8-l6tv5': 1263
+----
++
+. you can look deeper in Jaeger by searching for `http.status_code=403`
 +
 image:images/jaeger-denier.png[]
 +
+The (most recent) traces presented should represent direct customer->recommendation inactions, like this one:
++
+image:images/jaeger-denier-detail.png[]
++
 [OPTIONAL]
-.Remove the restriction
+.Quickly remove the restrictions
 ====
-You can remove the acl easily by deleting the istiofiles like so
-----
-kubectl delete -f istiofiles/acl-deny-except-customer2preference2recommendation.yml -n $PROJECT_PREFIX
 
-denier.config.istio.io "do-not-pass-go" deleted
-checknothing.config.istio.io "just-stop" deleted
-rule.config.istio.io "no-customer-to-recommendation" deleted
-rule.config.istio.io "no-preference-to-customer" deleted
-rule.config.istio.io "no-recommendation-to-customer" deleted
-rule.config.istio.io "no-recommendation-to-preference" deleted
+You can remove all the AuthorizationPolicies quickly by simply deleting the relevant CRs from the cluster:
+
 ----
+kubectl delete -n $PROJECT_PREFIX -f $DEMO_HOME/istiofiles/authorization 
+----
+----
+authorizationpolicy.security.istio.io "customer-viewer" deleted
+authorizationpolicy.security.istio.io "preference-viewer" deleted
+authorizationpolicy.security.istio.io "recommendation-viewer" deleted
+authorizationpolicy.security.istio.io "deny-all" deleted
+----
+
 ====
 +
-. To get rid of the offending customer service, navigate (using kbd:[CMD+p]) to start searching for _virtual-service-customer-v1_only.yml_.  
-** Point out what the file is doing
+. To get rid of the offending customer service, navigate (using kbd:[CMD+p]) to start searching for `virtual-service-customer-v1_only.yml`
+. Point out that this file is updating our customer virtual service to only call the properly functioning v1 of the service
 . Now apply the changes
 +
 ----
-kubectl apply -f $DEMO_HOME/kube/customer/virtual-service-customer-v1_only.yml
+kubectl apply -n $PROJECT_PREFIX -f $DEMO_HOME/kube/customer/virtual-service-customer-v1_only.yml
 ----
 +
-. Go back to Kiali.  The errors should stop
+. Immediately RBAC errors in the shell should stop
+. Go back to Kiali.  The 403 errors should fade over time
 
-== Other Opportunities: Route based on Headers
+=== OPTIONAL: Principals and mTLS
+
+. To be able to make authorization policy rules based on prinicpals, you must have mTLS enabled in your mesh
+. mTLS is enabled by default, this can be made apparent by visualizing this in Kiali
++
+image:images/kiali-mtls.png[]
++
+. In VSCode use kbd:[CMD+p] to quickly open `disable-mtls.yml`
+. Turn off mtls by applying the yaml (to change the `PeerAuthentication`)
++
+----
+kubectl apply -n $PROJECT_PREFIX -f $DEMO_HOME/istiofiles/mTLS/disable-mtls.yml
+----
+. Show that all principal based AuthorizationPolicies now fail (only calls into customer can be made)
++
+----
+customer => Error: 403 - RBAC: access denied
+customer => Error: 403 - RBAC: access denied
+customer => Error: 403 - RBAC: access denied
+customer => Error: 403 - RBAC: access denied
+----
++
+. Notice also that the lock icons are now missing from *Kiali Dashboard*
+** NOTE: It might take a few seconds for connections to update
+. In VSCode use kbd:[CMD+p] to quickly open `enable-mtls.yml`
+. Reinstate mTLS by running the following command:
++
+----
+kubectl apply -n $PROJECT_PREFIX -f $DEMO_HOME/istiofiles/mTLS/enable-mtls.yml
+----
+
+== Route based on Headers
 
 Special message for some
 
