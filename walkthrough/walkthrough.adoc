@@ -540,16 +540,29 @@ kubectl apply -n $PROJECT_PREFIX -f $DEMO_HOME/istiofiles/mTLS/enable-mtls.yml
 
 == Route based on Headers
 
-Special message for some
+[NOTE]
+====
+Some things to note about this section:
 
-NOTE: This is demonstrated best when all traffic is routed only to v1 of the customer
+* This is demonstrated best when all traffic is routed only to v1 of the customer
+* You might consider setting up a QR Code and/or a bit.ly link to your istio gateway so people can see this working
+* Instructions use the Firefox version of the header, but points will call out where you can use the iPhone version of the header if that is more appropriate to your audience
+** Replace `virtual-service-recommendation-header-firefox.yml` with `virtual-service-recommendation-header-iPhone.yml`
+** You can issue this command to fake an iPhone call
++
+----
+$DEMO_HOME/scripts/project-load-gen.sh customer --istio -h "User-Agent: Pretend iPhone OS Test"
+----
+====
 
-. In VSCode use kbd:[CMD+P] to quickly open _virtual-service-recommendation-header.yml_
+In this section we show that we can use Istio as a layer 7 loadbalancer allowing us to route people through the mesh based on headers.  In this example, people that access the mesh with the right User-Agent header will be able to see a special message that is displayed by the `Recommendation-v3` service that we setup <<Preamble (for Live Demos),earlier in this walkthrough>>
+
+. In VSCode use kbd:[CMD+P] to quickly open `virtual-service-recommendation-header-firefox.yml`
 
 . Review the file and then apply it to the cluster
 +
 ----
-oc apply -f $DEMO_HOME/istiofiles/virtual-service-recommendation-header.yml -n $PROJECT_PREFIX
+oc apply -n $PROJECT_PREFIX -f $DEMO_HOME/istiofiles/headers/virtual-service-recommendation-header-firefox.yml
 ----
 +
 . [blue]#OPTIONAL:# Now you can show the audience what has just been setup using istioctl
@@ -561,8 +574,8 @@ istioctl x describe pod -i $PROJECT_PREFIX-istio-system -n $PROJECT_PREFIX $(oc 
 ** Successful output will look like this (if output doesn't match, then look to <<Debugging with Istioctl,Troubleshooting>> section)
 +
 ----
-Pod: recommendation-v3-3-k5h42
-   Pod Ports: 8080 (recommendation-v3), 8443 (recommendation-v3), 8778 (recommendation-v3), 15090 (istio-proxy)
+Pod: recommendation-v3-5896d9c455-htczf
+   Pod Ports: 8080 (recommendation-v3), 15090 (istio-proxy)
 --------------------
 Service: recommendation
    Port: http 8080/HTTP targets pod port 8080
@@ -570,10 +583,14 @@ DestinationRule: recommendation for "recommendation"
    Matching subsets: version-v3
       (Non-matching subsets version-v1,version-v2)
    No Traffic Policy
-Pod is PERMISSIVE (enforces HTTP/mTLS) and clients speak HTTP
 VirtualService: recommendation
-   when headers are baggage-user-agent=regex:".*iPhone OS.*"
+   when headers are baggage-user-agent=regex:".*Firefox/.*"
    1 additional destination(s) that will not reach this pod
+RBAC policies: ns[demo-app]-policy[recommendation-viewer]-rule[0]
+--------------------
+Service: recommendation-v3
+   Port: http 8080/HTTP targets pod port 8080
+RBAC policies: ns[demo-app]-policy[recommendation-viewer]-rule[0]
 ----
 +
 .A slightly less useful version of the above command
@@ -590,35 +607,35 @@ Service: recommendation
 DestinationRule: recommendation for "recommendation"
    Matching subsets: version-v1,version-v2,version-v3
    No Traffic Policy
-Pod is PERMISSIVE, client protocol unspecified
 VirtualService: recommendation
-   when headers are baggage-user-agent=regex:".*iPhone OS.*"
+   when headers are baggage-user-agent=regex:".*Firefox/.*"
    Weight 50%
    Weight 50%
+RBAC policies: ns[demo-app]-policy[recommendation-viewer]-rule[0]
 ----
 ====
 +
 . Issue a command with a non-compatible user agent
 +
 ----
-$DEMO_HOME/scripts/project-load-gen.sh customer --istio -h "User-Agent: Pretend Android"
+$DEMO_HOME/scripts/project-load-gen.sh customer --istio -h "User-Agent: Pretend Browser"
 ----
 +
 . Notice that there is no change in what's returned.
-. Now attempt to start load with a suitable user-agent
+. Now attempt to start load with a suitable user-agent (or simply access the istio-ingress with Firefox)
 +
 ----
-$DEMO_HOME/scripts/project-load-gen.sh customer --istio -h "User-Agent: Pretend iPhone OS Test"
+$DEMO_HOME/scripts/project-load-gen.sh customer --istio -h "User-Agent: Pretend Firefox/Mozilla"
 ----
 +
-** You should see Recommendation-v3 returned
-
-=== For Live Shows
-
-. Ask the audience to navigate to this url: http://bit.ly/petalks
-** OR alternatively can use the QR Code
-
-image:images/test-web.png[]
+. You should now only see the following returned (if you opted for more than one call)
++
+----
+customer => preference => recommendation v3 from '5896d9c455-htczf': 70
+customer => preference => recommendation v3 from '5896d9c455-htczf': 71
+customer => preference => recommendation v3 from '5896d9c455-htczf': 72
+customer => preference => recommendation v3 from '5896d9c455-htczf': 73
+----
 
 == Troubleshooting
 
