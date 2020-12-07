@@ -107,7 +107,7 @@ oc new-app recommendation-v3 -l app=recommendation,version=v3,app.kubernetes.io/
     -e JAVA_TOOL_OPTIONS="-Xdebug -Xrunjdwp:transport=dt_socket,address=5005,server=y,suspend=n" -n $PROJECT_NAME
 sleep 1
 # ensure sidecar injection
-oc patch deploy/recommendation-v3 -n $PROJECT_NAME --patch '{"spec":{"template":{"metadata":{"annotations": { "sidecar.istio.io/inject":"true" }}}}}'
+oc patch dc/recommendation-v3 -n $PROJECT_NAME --patch '{"spec":{"template":{"metadata":{"annotations": { "sidecar.istio.io/inject":"true" }}}}}'
 
 # rename port 8080 as http to conform with what istio is looking for around policy enforcement.  If this is not done,
 # kubectl get service recommendation-v3 -o yaml | istioctl validate -i demo-app-istio-system -f -  
