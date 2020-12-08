@@ -14,32 +14,6 @@ There are three different and super simple microservices in this system and they
 customer → preference → recommendation
 ```
 
-
-
-== General Setup
-
-To be able to run the walkthrough, you need to follow these steps:
-
-. clone or fork this repo
-
-. open Visual Studio Code with the Remote extension installed
-
-. cd to the local directory
-
-. run the following command
-+
-----
-code .
-----
-+
-. When prompted, indicate that you want to run the folder in a container
-
-. Then follow the demo setup instructions using the VS Code terminal (which will be running in the container)
-
-== Full Demo Setup
-
-Follow the following steps to be able to run link:walkthrough/walkthrough.adoc[this walkthrough].  These instructions were tested with OpenShift 4.6 and follow the instructions that can be found link:https://docs.openshift.com/container-platform/4.6/service_mesh/v2x/installing-ossm.html[here]
-
 .Component versions included in Red Hat OpenShift Service Mesh version 2.0.0
 |===
 |Component |Version
@@ -58,16 +32,44 @@ Follow the following steps to be able to run link:walkthrough/walkthrough.adoc[t
 
 |===
 
+NOTE: [red]#OpenShift Service Mesh 2.0 allows for 1.1 AND 2.0 Service Mesh Control Planes.#  This version of the demo uses the 1.1 version of the Service Mesh Control Plane
+
+== Full Demo Setup
+
+Follow these steps to be able to run link:walkthrough/walkthrough.adoc[this walkthrough].  These instructions were tested with OpenShift 4.6 and follow the instructions that can be found link:https://docs.openshift.com/container-platform/4.6/service_mesh/v2x/installing-ossm.html[here]
+
+Following these instructions will cause all the prerequisites (operators) necessary to support the demo to be installed as well as the demo elements themselves.  [red]#To minimize compatibility issues when installing from different OSes, the installation process should be run from inside of some sort of container.#
+
+. If you are not using link:https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers[VSCode Remove Containers] then follow these steps to get a container running in which you'll issue all the following commands:
+.. Change to the root of this repository
+.. Run the following command
++
+----
+docker run -it -v ~/.kube:/home/jboss/.kube -v ~/.oh-my-zsh:/home/jboss/.oh-my-zsh -v $(pwd):/workspaces/service-mesh-demo -w /workspaces/service-mesh-demo quay.io/mhildenb/sm-demo-shell /bin/zsh
+----
++
+.. If all ran successfully you should see the following:
++
+----
+DEMO_HOME is /workspaces/service-mesh-demo
+PROJECT_PREFIX is demo-app
+Welcome to the Service Mesh Demo.
+➜  service-mesh-demo git:(feature-sm2) ✗ 
+----
+. Once you're inside the terminal of the VSCode remote shell or the shell of the sm-demo-shell container you ran per the instructions above make sure to log into an OpenShift cluster with `cluster-admin` rights
+** NOTE: by having the container mount your `~/.kube` directory, if you were previously logged into an OpenShift cluster this should carry through to the container
+. Issue the following command:
++
 ----
 $DEMO_HOME/scripts/setup-full-demo.sh
 ----
-
-The installation takes about 5-10 minutes normally.  If all progressed successfully, you should see a message like this as the script exits:
-
++
+. The installation takes about 5-10 minutes normally.  If all progressed successfully, you should see a message like this as the script exits:
++
 ----
 Demo installation progressed successfully!
 ----
-
++
 You can then proceed to the link:walkthrough/walkthrough.adoc[Walkthrough].
 
 === Optional: 3Scale Adaptor Setup (WIP)
